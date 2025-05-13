@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, Users, CreditCard, LogIn, UserPlus } from 'lucide-react';
+import { MapPin, Calendar, Users, CreditCard } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
@@ -14,22 +13,6 @@ const HeroSection: React.FC = () => {
         <p className="text-xl text-gray-600 mb-8 leading-relaxed">
           Plan trips, split costs evenly, and settle expenses with Trip Atlas. Perfect for traveling with friends, family, or colleagues.
         </p>
-        
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button className="bg-atlas-forest hover:bg-atlas-forest/80 text-white flex items-center gap-2">
-              <UserPlus size={18} />
-              Sign Up
-            </Button>
-            <Button variant="outline" className="border-atlas-slate text-atlas-slate hover:bg-atlas-slate/10 flex items-center gap-2">
-              <LogIn size={18} />
-              Sign In
-            </Button>
-          </div>
-          <p className="text-sm text-gray-500">
-            Free to use. No credit card required.
-          </p>
-        </div>
       </div>
       
       {/* Right side - Illustration */}
