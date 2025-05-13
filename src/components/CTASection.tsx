@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { MapPin } from 'lucide-react';
 
 const CTASection: React.FC = () => {
   return (
@@ -9,23 +9,17 @@ const CTASection: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-            Ready to simplify your group travel?
+            Start planning your next adventure together
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Join Trip Atlas today and experience stress-free travel expense management.
+            Join thousands of travelers who manage expenses effortlessly and focus on making memories.
           </p>
           
           <div className="max-w-md mx-auto">
-            <form className="flex flex-col sm:flex-row gap-3">
-              <Input 
-                type="email" 
-                placeholder="Enter your email" 
-                className="border-gray-200"
-              />
-              <Button className="bg-atlas-blue-dark hover:bg-atlas-blue text-white">
-                Get Started - Free
-              </Button>
-            </form>
+            <Button size="lg" className="bg-atlas-rust hover:bg-atlas-rust/90 text-white font-medium px-8 py-6 h-auto text-lg flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              Explore Trip Atlas
+            </Button>
             <p className="text-sm text-gray-500 mt-3">
               No credit card required. Cancel anytime.
             </p>
