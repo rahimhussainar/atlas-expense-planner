@@ -52,12 +52,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-        // Consistent Trip Atlas colors
-        "atlas-slate": "#3F4B58",
-        "atlas-forest": "#4A6C6F",
-        "atlas-rust": "#A85751",
-        "atlas-gold": "#D6A656",
-        "atlas-gray": "#E5E7EB",
+                // Consistent Trip Atlas colors
+                "atlas-slate": "#3F4B58",
+                "atlas-forest": "#4A6C6F",
+                "atlas-rust": "#A85751",
+                "atlas-gold": "#D6A656",
+                "atlas-gray": "#E5E7EB",
+                "atlas-blue": "#6B7A90", // Added atlas-blue color
+                "atlas-blue-dark": "#4A5568", // Added a darker variant for existing atlas-blue-dark references
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -81,15 +83,15 @@ export default {
 						height: '0'
 					}
 				},
-        'float': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        }
+                'float': {
+                  '0%, 100%': { transform: 'translateY(0)' },
+                  '50%': { transform: 'translateY(-10px)' },
+                }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-        'float': 'float 6s ease-in-out infinite',
+                'float': 'float 6s ease-in-out infinite',
 			}
 		}
 	},
