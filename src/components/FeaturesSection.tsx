@@ -21,7 +21,7 @@ const features = [
   {
     icon: <Calendar className="h-10 w-10 text-atlas-purple" />,
     title: 'Activity Management',
-    description: 'Schedule activities, track who's participating, and convert plans into shared expenses.'
+    description: 'Schedule activities, track who\'s participating, and convert plans into shared expenses.'
   }
 ];
 

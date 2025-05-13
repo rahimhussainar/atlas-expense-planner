@@ -10,7 +10,7 @@ const steps = [
   {
     number: '02',
     title: 'Invite friends',
-    description: 'Add travel companions by email. They'll get notified and can join your trip with one click.'
+    description: 'Add travel companions by email. They\'ll get notified and can join your trip with one click.'
   },
   {
     number: '03',
