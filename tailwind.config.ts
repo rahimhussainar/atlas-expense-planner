@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+        // Custom Trip Atlas colors
+        "atlas-blue": "#9ED8DB",
+        "atlas-blue-dark": "#5FBDC5",
+        "atlas-coral": "#F8AFA6",
+        "atlas-coral-dark": "#F3867A",
+        "atlas-yellow": "#FFD166",
+        "atlas-green": "#A5D6A7",
+        "atlas-purple": "#D4C1EC",
+        "atlas-gray": "#F1F0F5",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +94,16 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float 6s ease-in-out infinite',
 			}
 		}
 	},
