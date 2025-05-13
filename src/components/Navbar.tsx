@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar: React.FC = () => {
   return (
@@ -9,14 +10,14 @@ const Navbar: React.FC = () => {
       <Logo />
       
       <div className="hidden md:flex items-center space-x-8">
-        <a href="#features" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Features</a>
-        <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">How it Works</a>
-        <a href="#pricing" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Pricing</a>
+        <a href="#features" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white font-medium transition-colors">Features</a>
+        <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white font-medium transition-colors">How it Works</a>
       </div>
       
       <div className="flex items-center space-x-3">
+        <ThemeToggle />
         <Button variant="ghost" className="hidden md:inline-flex">Log in</Button>
-        <Button className="bg-atlas-blue-dark hover:bg-atlas-blue text-white">Sign up</Button>
+        <Button className="bg-atlas-slate hover:bg-atlas-slate-dark text-white">Sign up</Button>
       </div>
     </nav>
   );

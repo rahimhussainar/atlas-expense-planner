@@ -63,15 +63,15 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-        // Custom Trip Atlas colors
-        "atlas-blue": "#9ED8DB",
-        "atlas-blue-dark": "#5FBDC5",
-        "atlas-coral": "#F8AFA6",
-        "atlas-coral-dark": "#F3867A",
-        "atlas-yellow": "#FFD166",
-        "atlas-green": "#A5D6A7",
-        "atlas-purple": "#D4C1EC",
-        "atlas-gray": "#F1F0F5",
+        // Custom Trip Atlas colors - more masculine palette
+        "atlas-slate": "#3F4B58",
+        "atlas-slate-dark": "#2C3540",
+        "atlas-rust": "#A85751",
+        "atlas-rust-light": "#D28A84",
+        "atlas-gold": "#D6A656",
+        "atlas-forest": "#4A6C6F",
+        "atlas-gray": "#E5E7EB",
+        "atlas-charcoal": "#1F2937",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
