@@ -74,36 +74,36 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
-      <div className="mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white p-4">
+      <div className="mb-6">
         <Logo />
       </div>
       
-      <Card className="w-full max-w-md shadow-lg p-6 bg-white rounded-xl">
+      <Card className="w-full max-w-md p-5 bg-white rounded-lg border border-gray-100 shadow-sm">
         <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
-            <TabsTrigger value="login" className="text-base">Sign In</TabsTrigger>
-            <TabsTrigger value="register" className="text-base">Sign Up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-gray-50">
+            <TabsTrigger value="login" className="text-sm">Sign In</TabsTrigger>
+            <TabsTrigger value="register" className="text-sm">Sign Up</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Button 
                 variant="outline" 
                 onClick={handleGoogleSignIn} 
-                className="w-full p-6 flex items-center justify-center gap-3 border-gray-300 hover:bg-gray-50"
+                className="w-full py-2 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md"
               >
-                <img src="/google.svg" alt="Google" className="w-5 h-5" />
-                <span>Sign in with Google</span>
+                <img src="/google.svg" alt="Google" className="w-4 h-4" />
+                <span className="text-sm">Sign in with Google</span>
               </Button>
 
-              <div className="flex items-center my-4">
+              <div className="flex items-center my-3">
                 <Separator className="flex-grow" />
-                <span className="px-4 text-gray-500 text-sm">OR CONTINUE WITH EMAIL</span>
+                <span className="px-3 text-gray-400 text-xs">OR CONTINUE WITH EMAIL</span>
                 <Separator className="flex-grow" />
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-3">
                 <div className="space-y-2">
                   <div className="relative">
                     <Input
@@ -112,26 +112,26 @@ const Auth = () => {
                       placeholder="Email address"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-10 h-12"
+                      className="pl-9 h-10"
                       required
                     />
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <Input
                     id="login-password"
                     type="password"
                     placeholder="Password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                     required
                   />
                 </div>
                 
-                <div className="text-sm text-right">
+                <div className="text-xs text-right">
                   <a href="#" className="text-atlas-forest hover:underline">
                     Forgot password?
                   </a>
@@ -139,7 +139,7 @@ const Auth = () => {
 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-atlas-forest hover:bg-atlas-forest/90 text-base"
+                  className="w-full h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -149,35 +149,35 @@ const Auth = () => {
           </TabsContent>
 
           <TabsContent value="register">
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Button
                 variant="outline"
                 onClick={handleGoogleSignIn}
-                className="w-full p-6 flex items-center justify-center gap-3 border-gray-300 hover:bg-gray-50"
+                className="w-full py-2 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md"
               >
-                <img src="/google.svg" alt="Google" className="w-5 h-5" />
-                <span>Sign up with Google</span>
+                <img src="/google.svg" alt="Google" className="w-4 h-4" />
+                <span className="text-sm">Sign up with Google</span>
               </Button>
 
-              <div className="flex items-center my-4">
+              <div className="flex items-center my-3">
                 <Separator className="flex-grow" />
-                <span className="px-4 text-gray-500 text-sm">OR CONTINUE WITH EMAIL</span>
+                <span className="px-3 text-gray-400 text-xs">OR CONTINUE WITH EMAIL</span>
                 <Separator className="flex-grow" />
               </div>
 
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="space-y-2">
+              <form onSubmit={handleRegister} className="space-y-3">
+                <div className="space-y-1">
                   <Input
                     id="full-name"
                     placeholder="Full Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                     required
                   />
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="relative">
                     <Input
                       id="register-email"
@@ -185,42 +185,42 @@ const Auth = () => {
                       placeholder="Email address"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
-                      className="pl-10 h-12"
+                      className="pl-9 h-10"
                       required
                     />
-                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <Input
                     id="register-password"
                     type="password"
                     placeholder="Password"
                     value={registerPassword}
                     onChange={(e) => setRegisterPassword(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                     required
                   />
                 </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <Input
                     id="confirm-password"
                     type="password"
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                     required
                   />
                 </div>
                 
-                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {error && <p className="text-red-500 text-xs">{error}</p>}
                 
                 <Button
                   type="submit"
-                  className="w-full h-12 bg-atlas-forest hover:bg-atlas-forest/90 text-base"
+                  className="w-full h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
