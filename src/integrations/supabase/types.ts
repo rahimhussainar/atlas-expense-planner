@@ -9,7 +9,101 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      trip_participants: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          status: string | null
+          trip_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          status?: string | null
+          trip_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          status?: string | null
+          trip_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_participants_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          cover_image: string | null
+          created_at: string | null
+          created_by: string
+          currency: string | null
+          description: string | null
+          destination: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string | null
+          created_by: string
+          currency?: string | null
+          description?: string | null
+          destination?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string | null
+          created_by?: string
+          currency?: string | null
+          description?: string | null
+          destination?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
