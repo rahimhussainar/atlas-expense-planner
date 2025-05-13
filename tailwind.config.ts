@@ -2,7 +2,6 @@
 import type { Config } from "tailwindcss";
 
 export default {
-	darkMode: ["class"],
 	content: [
 		"./pages/**/*.{ts,tsx}",
 		"./components/**/*.{ts,tsx}",
@@ -53,25 +52,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
-				},
-        // Custom Trip Atlas colors - more masculine palette
+        // Consistent Trip Atlas colors
         "atlas-slate": "#3F4B58",
-        "atlas-slate-dark": "#2C3540",
-        "atlas-rust": "#A85751",
-        "atlas-rust-light": "#D28A84",
-        "atlas-gold": "#D6A656",
         "atlas-forest": "#4A6C6F",
+        "atlas-rust": "#A85751",
+        "atlas-gold": "#D6A656",
         "atlas-gray": "#E5E7EB",
-        "atlas-charcoal": "#1F2937",
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

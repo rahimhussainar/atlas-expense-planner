@@ -23,7 +23,7 @@ const HeroSection: React.FC = () => {
               placeholder="Enter your email" 
               className="bg-white border-gray-200"
             />
-            <Button className="bg-atlas-blue-dark hover:bg-atlas-blue text-white">
+            <Button className="bg-atlas-forest hover:bg-atlas-forest/80 text-white">
               Get Started
             </Button>
           </form>
@@ -38,36 +38,38 @@ const HeroSection: React.FC = () => {
         <div className="relative w-full max-w-md">
           <div className="absolute -top-6 -left-6 animate-float delay-100">
             <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
-              <MapPin className="text-atlas-coral" />
+              <MapPin className="text-atlas-rust" />
               <span className="font-medium">Trip to Barcelona</span>
             </div>
           </div>
           
           <div className="absolute top-20 -right-4 animate-float delay-300">
             <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
-              <Calendar className="text-atlas-blue-dark" />
+              <Calendar className="text-atlas-forest" />
               <span className="font-medium">June 10-16</span>
             </div>
           </div>
           
           <div className="absolute bottom-20 -left-8 animate-float delay-500">
             <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
-              <Users className="text-atlas-green" />
+              <Users className="text-atlas-gold" />
               <span className="font-medium">4 travelers</span>
             </div>
           </div>
           
           <div className="absolute -bottom-6 -right-2 animate-float delay-700">
             <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
-              <CreditCard className="text-atlas-purple" />
+              <CreditCard className="text-atlas-slate" />
               <span className="font-medium">$240 per person</span>
             </div>
           </div>
           
-          <div className="bg-atlas-blue/20 border-4 border-atlas-blue-dark h-80 w-80 rounded-full flex items-center justify-center">
+          <div className="bg-atlas-rust/20 border-4 border-atlas-rust h-80 w-80 rounded-full flex items-center justify-center">
             <div className="bg-white h-3/5 w-3/5 rounded-full shadow-lg flex items-center justify-center">
-              <div className="bg-atlas-coral/30 h-2/3 w-2/3 rounded-full flex items-center justify-center">
-                <div className="bg-atlas-coral h-1/2 w-1/2 rounded-full"></div>
+              <div className="bg-atlas-gold/30 h-2/3 w-2/3 rounded-full flex items-center justify-center">
+                <div className="bg-atlas-forest h-1/2 w-1/2 rounded-full flex items-center justify-center">
+                  <div className="bg-atlas-slate h-2/3 w-2/3 rounded-full"></div>
+                </div>
               </div>
             </div>
           </div>

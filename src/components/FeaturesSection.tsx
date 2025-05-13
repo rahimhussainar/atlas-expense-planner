@@ -4,22 +4,22 @@ import { Users, CreditCard, Calendar, MapPin } from 'lucide-react';
 
 const features = [
   {
-    icon: <MapPin className="h-10 w-10 text-atlas-blue-dark" />,
+    icon: <MapPin className="h-10 w-10 text-atlas-rust" />,
     title: 'Trip Planning',
     description: 'Create detailed trip plans with destinations, dates, and invite friends to join your adventures.'
   },
   {
-    icon: <CreditCard className="h-10 w-10 text-atlas-coral-dark" />,
+    icon: <CreditCard className="h-10 w-10 text-atlas-forest" />,
     title: 'Expense Tracking',
     description: 'Easily log expenses, categorize them, and see a clear breakdown of costs for everyone.'
   },
   {
-    icon: <Users className="h-10 w-10 text-atlas-green" />,
+    icon: <Users className="h-10 w-10 text-atlas-gold" />,
     title: 'Fair Splits',
     description: 'Split expenses evenly or customize how costs are shared among trip participants.'
   },
   {
-    icon: <Calendar className="h-10 w-10 text-atlas-purple" />,
+    icon: <Calendar className="h-10 w-10 text-atlas-slate" />,
     title: 'Activity Management',
     description: 'Schedule activities, track who\'s participating, and convert plans into shared expenses.'
   }
