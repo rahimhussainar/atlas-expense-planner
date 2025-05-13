@@ -4,10 +4,11 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 import Logo from '@/components/Logo';
+import { Mail } from 'lucide-react';
 
 const Auth = () => {
   const { signIn, signUp, user } = useAuth();
@@ -67,122 +68,165 @@ const Auth = () => {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    // This will be implemented when Supabase Google Auth is set up
+    alert("Google Sign In will be implemented when Supabase Google Auth is configured");
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
       <div className="mb-8">
         <Logo />
       </div>
-      <Card className="w-full max-w-md shadow-lg">
-        <Tabs defaultValue="login">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+      
+      <Card className="w-full max-w-md shadow-lg p-6 bg-white rounded-xl">
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="login" className="text-base">Sign In</TabsTrigger>
+            <TabsTrigger value="register" className="text-base">Sign Up</TabsTrigger>
           </TabsList>
 
           <TabsContent value="login">
-            <form onSubmit={handleLogin}>
-              <CardHeader>
-                <CardTitle>Welcome Back</CardTitle>
-                <CardDescription>Sign in to your account to continue</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <Button 
+                variant="outline" 
+                onClick={handleGoogleSignIn} 
+                className="w-full p-6 flex items-center justify-center gap-3 border-gray-300 hover:bg-gray-50"
+              >
+                <img src="/google.svg" alt="Google" className="w-5 h-5" />
+                <span>Sign in with Google</span>
+              </Button>
+
+              <div className="flex items-center my-4">
+                <Separator className="flex-grow" />
+                <span className="px-4 text-gray-500 text-sm">OR CONTINUE WITH EMAIL</span>
+                <Separator className="flex-grow" />
+              </div>
+
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input 
-                    id="login-email" 
-                    type="email" 
-                    placeholder="your@email.com" 
-                    value={loginEmail} 
-                    onChange={(e) => setLoginEmail(e.target.value)} 
-                    required 
+                  <div className="relative">
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="Email address"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      className="pl-10 h-12"
+                      required
+                    />
+                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Input
+                    id="login-password"
+                    type="password"
+                    placeholder="Password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    className="h-12"
+                    required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input 
-                    id="login-password" 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={loginPassword} 
-                    onChange={(e) => setLoginPassword(e.target.value)} 
-                    required 
-                  />
+                
+                <div className="text-sm text-right">
+                  <a href="#" className="text-atlas-forest hover:underline">
+                    Forgot password?
+                  </a>
                 </div>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-atlas-forest hover:bg-atlas-forest/90" 
+
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-atlas-forest hover:bg-atlas-forest/90 text-base"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
                 </Button>
-              </CardFooter>
-            </form>
+              </form>
+            </div>
           </TabsContent>
 
           <TabsContent value="register">
-            <form onSubmit={handleRegister}>
-              <CardHeader>
-                <CardTitle>Create Account</CardTitle>
-                <CardDescription>Sign up for a new Trip Atlas account</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="space-y-4">
+              <Button
+                variant="outline"
+                onClick={handleGoogleSignIn}
+                className="w-full p-6 flex items-center justify-center gap-3 border-gray-300 hover:bg-gray-50"
+              >
+                <img src="/google.svg" alt="Google" className="w-5 h-5" />
+                <span>Sign up with Google</span>
+              </Button>
+
+              <div className="flex items-center my-4">
+                <Separator className="flex-grow" />
+                <span className="px-4 text-gray-500 text-sm">OR CONTINUE WITH EMAIL</span>
+                <Separator className="flex-grow" />
+              </div>
+
+              <form onSubmit={handleRegister} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="full-name">Full Name</Label>
-                  <Input 
-                    id="full-name" 
-                    placeholder="John Doe" 
-                    value={fullName} 
-                    onChange={(e) => setFullName(e.target.value)} 
-                    required 
+                  <Input
+                    id="full-name"
+                    placeholder="Full Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="h-12"
+                    required
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="register-email">Email</Label>
-                  <Input 
-                    id="register-email" 
-                    type="email" 
-                    placeholder="your@email.com" 
-                    value={registerEmail} 
-                    onChange={(e) => setRegisterEmail(e.target.value)} 
-                    required 
+                  <div className="relative">
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="Email address"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      className="pl-10 h-12"
+                      required
+                    />
+                    <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Input
+                    id="register-password"
+                    type="password"
+                    placeholder="Password"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    className="h-12"
+                    required
                   />
                 </div>
+                
                 <div className="space-y-2">
-                  <Label htmlFor="register-password">Password</Label>
-                  <Input 
-                    id="register-password" 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={registerPassword} 
-                    onChange={(e) => setRegisterPassword(e.target.value)} 
-                    required 
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="h-12"
+                    required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input 
-                    id="confirm-password" 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={confirmPassword} 
-                    onChange={(e) => setConfirmPassword(e.target.value)} 
-                    required 
-                  />
-                </div>
+                
                 {error && <p className="text-red-500 text-sm">{error}</p>}
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-atlas-forest hover:bg-atlas-forest/90" 
+                
+                <Button
+                  type="submit"
+                  className="w-full h-12 bg-atlas-forest hover:bg-atlas-forest/90 text-base"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>
-              </CardFooter>
-            </form>
+              </form>
+            </div>
           </TabsContent>
         </Tabs>
       </Card>

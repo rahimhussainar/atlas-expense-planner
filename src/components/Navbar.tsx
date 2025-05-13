@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex justify-between items-center w-full py-4 px-6 bg-white shadow-sm">
+    <nav className="flex justify-between items-center w-full py-4 px-6 absolute top-0 left-0 z-10">
       <Logo />
       
       <div className="hidden md:flex items-center space-x-6">

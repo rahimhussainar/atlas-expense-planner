@@ -27,7 +27,7 @@ const features = [
 
 const FeaturesSection: React.FC = () => {
   return (
-    <div id="features" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12 bg-atlas-gray">
+    <div id="features" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
@@ -42,7 +42,7 @@ const FeaturesSection: React.FC = () => {
           {features.map((feature, index) => (
             <div 
               key={index} 
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300"
+              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
             >
               <div className="mb-5">{feature.icon}</div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">{feature.title}</h3>

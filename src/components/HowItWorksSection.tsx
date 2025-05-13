@@ -40,7 +40,7 @@ const HowItWorksSection: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {steps.map((step, index) => (
             <div key={index} className="relative">
-              <div className="mb-4 text-5xl font-bold text-atlas-blue/30">{step.number}</div>
+              <div className="mb-4 text-5xl font-bold text-atlas-blue/70">{step.number}</div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">{step.title}</h3>
               <p className="text-gray-600">{step.description}</p>
               
