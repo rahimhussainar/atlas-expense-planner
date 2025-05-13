@@ -75,11 +75,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white p-4">
-      <div className="mb-6">
+      <div className="mb-4 md:mb-6">
         <Logo />
       </div>
       
-      <Card className="w-full max-w-md p-5 bg-white rounded-lg border border-gray-100 shadow-sm">
+      <Card className="w-full max-w-md p-4 md:p-5 bg-white rounded-lg border border-gray-100 shadow-sm">
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4 bg-gray-50">
             <TabsTrigger value="login" className="text-sm">Sign In</TabsTrigger>
@@ -87,24 +87,24 @@ const Auth = () => {
           </TabsList>
 
           <TabsContent value="login">
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <Button 
                 variant="outline" 
                 onClick={handleGoogleSignIn} 
-                className="w-full py-2 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md"
+                className="w-full py-1.5 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md text-sm h-9 md:h-10"
               >
                 <img src="/google.svg" alt="Google" className="w-4 h-4" />
                 <span className="text-sm">Sign in with Google</span>
               </Button>
 
-              <div className="flex items-center my-3">
-                <Separator className="flex-grow" />
-                <span className="px-3 text-gray-400 text-xs">OR CONTINUE WITH EMAIL</span>
-                <Separator className="flex-grow" />
+              <div className="flex items-center my-2">
+                <Separator className="flex-grow h-[0.5px] bg-gray-200" />
+                <span className="px-2 text-gray-400 text-xs font-normal">OR CONTINUE WITH EMAIL</span>
+                <Separator className="flex-grow h-[0.5px] bg-gray-200" />
               </div>
 
-              <form onSubmit={handleLogin} className="space-y-3">
-                <div className="space-y-2">
+              <form onSubmit={handleLogin} className="space-y-2.5">
+                <div className="space-y-1.5">
                   <div className="relative">
                     <Input
                       id="login-email"
@@ -112,10 +112,10 @@ const Auth = () => {
                       placeholder="Email address"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-9 h-10"
+                      className="pl-9 h-9 md:h-10 text-sm"
                       required
                     />
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 
@@ -126,7 +126,7 @@ const Auth = () => {
                     placeholder="Password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
-                    className="h-10"
+                    className="h-9 md:h-10 text-sm"
                     required
                   />
                 </div>
@@ -139,7 +139,7 @@ const Auth = () => {
 
                 <Button
                   type="submit"
-                  className="w-full h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
+                  className="w-full h-9 md:h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -149,30 +149,30 @@ const Auth = () => {
           </TabsContent>
 
           <TabsContent value="register">
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               <Button
                 variant="outline"
                 onClick={handleGoogleSignIn}
-                className="w-full py-2 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md"
+                className="w-full py-1.5 flex items-center justify-center gap-2 border-gray-200 hover:bg-gray-50 rounded-md text-sm h-9 md:h-10"
               >
                 <img src="/google.svg" alt="Google" className="w-4 h-4" />
                 <span className="text-sm">Sign up with Google</span>
               </Button>
 
-              <div className="flex items-center my-3">
-                <Separator className="flex-grow" />
-                <span className="px-3 text-gray-400 text-xs">OR CONTINUE WITH EMAIL</span>
-                <Separator className="flex-grow" />
+              <div className="flex items-center my-2">
+                <Separator className="flex-grow h-[0.5px] bg-gray-200" />
+                <span className="px-2 text-gray-400 text-xs font-normal">OR CONTINUE WITH EMAIL</span>
+                <Separator className="flex-grow h-[0.5px] bg-gray-200" />
               </div>
 
-              <form onSubmit={handleRegister} className="space-y-3">
+              <form onSubmit={handleRegister} className="space-y-2.5">
                 <div className="space-y-1">
                   <Input
                     id="full-name"
                     placeholder="Full Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="h-10"
+                    className="h-9 md:h-10 text-sm"
                     required
                   />
                 </div>
@@ -185,10 +185,10 @@ const Auth = () => {
                       placeholder="Email address"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
-                      className="pl-9 h-10"
+                      className="pl-9 h-9 md:h-10 text-sm"
                       required
                     />
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-2 h-4 w-4 text-gray-400" />
                   </div>
                 </div>
                 
@@ -199,7 +199,7 @@ const Auth = () => {
                     placeholder="Password"
                     value={registerPassword}
                     onChange={(e) => setRegisterPassword(e.target.value)}
-                    className="h-10"
+                    className="h-9 md:h-10 text-sm"
                     required
                   />
                 </div>
@@ -211,7 +211,7 @@ const Auth = () => {
                     placeholder="Confirm Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="h-10"
+                    className="h-9 md:h-10 text-sm"
                     required
                   />
                 </div>
@@ -220,7 +220,7 @@ const Auth = () => {
                 
                 <Button
                   type="submit"
-                  className="w-full h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
+                  className="w-full h-9 md:h-10 bg-atlas-forest hover:bg-atlas-forest/90 text-sm"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}

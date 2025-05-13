@@ -10,7 +10,7 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex justify-between items-center w-full py-4 px-6 absolute top-0 left-0 z-10">
+    <nav className="flex justify-between items-center w-full py-3 md:py-4 px-4 md:px-6 sticky top-0 left-0 z-10 bg-white/80 backdrop-blur-sm">
       <Logo />
       
       <div className="hidden md:flex items-center space-x-6">
@@ -18,11 +18,11 @@ const Navbar: React.FC = () => {
         <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">How it Works</a>
       </div>
       
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2 md:space-x-3">
         {user ? (
           <Button 
             onClick={() => navigate('/dashboard')} 
-            className="bg-atlas-forest hover:bg-atlas-forest/80 text-white"
+            className="bg-atlas-forest hover:bg-atlas-forest/80 text-white text-sm h-9"
           >
             Dashboard
           </Button>
@@ -31,13 +31,13 @@ const Navbar: React.FC = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/auth')}
-              className="hidden md:inline-flex"
+              className="text-sm h-9"
             >
               Log in
             </Button>
             <Button 
               onClick={() => navigate('/auth')}
-              className="bg-atlas-forest hover:bg-atlas-forest/80 text-white"
+              className="bg-atlas-forest hover:bg-atlas-forest/80 text-white text-sm h-9"
             >
               Sign up
             </Button>
