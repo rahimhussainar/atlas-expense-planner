@@ -28,6 +28,7 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
       const fileExt = file.name.split('.').pop();
       
       // Create a specific path that includes the user ID at the beginning
+      // This ensures it complies with our RLS policy
       const filePath = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
       // Upload the file to the avatars bucket
