@@ -16,11 +16,7 @@ export const supabase = createClient<Database>(
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-    },
-    global: {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
+    }
+    // Removed the global headers that were forcing 'application/json' content type
   }
 );
