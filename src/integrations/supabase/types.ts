@@ -29,7 +29,6 @@ export type Database = {
       }
       trip_participants: {
         Row: {
-          created_at: string | null
           email: string | null
           id: string
           rsvp_status: string | null
@@ -37,7 +36,6 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          created_at?: string | null
           email?: string | null
           id?: string
           rsvp_status?: string | null
@@ -45,7 +43,6 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          created_at?: string | null
           email?: string | null
           id?: string
           rsvp_status?: string | null
@@ -67,7 +64,6 @@ export type Database = {
           cover_image: string | null
           created_at: string | null
           created_by: string
-          currency: string | null
           description: string | null
           destination: string | null
           end_date: string | null
@@ -80,7 +76,6 @@ export type Database = {
           cover_image?: string | null
           created_at?: string | null
           created_by: string
-          currency?: string | null
           description?: string | null
           destination?: string | null
           end_date?: string | null
@@ -93,7 +88,6 @@ export type Database = {
           cover_image?: string | null
           created_at?: string | null
           created_by?: string
-          currency?: string | null
           description?: string | null
           destination?: string | null
           end_date?: string | null

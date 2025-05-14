@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -27,7 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (event === 'SIGNED_IN') {
+        // Only show welcome toast on explicit sign-in events, not on session restore
+        if (event === 'SIGNED_IN' && !initialLoad) {
           toast({
             title: "Welcome back!",
             description: "You've successfully signed in.",
@@ -40,6 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             description: "You've been successfully signed out.",
           });
         }
+
+        // After the first auth event, we're no longer in the initial loading state
+        if (initialLoad) {
+          setInitialLoad(false);
+        }
       }
     );
 
@@ -49,6 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      // After getting the session, we're no longer in the initial loading state
+      setInitialLoad(false);
     });
 
     return () => subscription.unsubscribe();
