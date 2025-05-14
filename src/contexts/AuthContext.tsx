@@ -43,11 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             description: "You've been successfully signed out.",
           });
         }
-
-        // After the first auth event, we're no longer in the initial loading state
-        if (initialLoad) {
-          setInitialLoad(false);
-        }
       }
     );
 
@@ -70,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         throw error;
       }
+      // We'll show the welcome toast via the auth state change event
     } catch (error: any) {
       toast({
         title: "Login failed",
