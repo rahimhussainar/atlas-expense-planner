@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +29,7 @@ const Dashboard: React.FC = () => {
 
   // Fetch user's trips
   useEffect(() => {
+    console.log("Dashboard mounted");
     const fetchTrips = async () => {
       try {
         const { data, error } = await supabase
