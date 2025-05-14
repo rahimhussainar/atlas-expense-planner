@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
@@ -27,42 +27,48 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
 
-  // Fetch user's trips
-  useEffect(() => {
-    console.log("Dashboard mounted");
-    const fetchTrips = async () => {
-      try {
-        setLoading(true);
-        
-        // With our fixed RLS policies, this query will now work correctly
-        // and only return trips the user has access to
-        const { data, error } = await supabase
-          .from('trips')
-          .select('*')
-          .order('created_at', { ascending: false });
+  // Memoize fetchTrips to prevent recreation on each render
+  const fetchTrips = useCallback(async () => {
+    // Skip if we don't have a user or if we've already tried to fetch
+    if (!user || hasAttemptedFetch) return;
+    
+    try {
+      console.log("Fetching trips for user:", user.id);
+      setLoading(true);
+      setHasAttemptedFetch(true);
+      
+      const { data, error } = await supabase
+        .from('trips')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-        if (error) {
-          throw error;
-        }
-
-        setTrips(data || []);
-      } catch (error: any) {
-        console.error("Error fetching trips:", error);
-        toast({
-          title: 'Error',
-          description: `Failed to load trips: ${error.message}`,
-          variant: 'destructive',
-        });
-      } finally {
-        setLoading(false);
+      if (error) {
+        throw error;
       }
-    };
 
-    if (user) {
+      console.log("Trips fetched successfully:", data?.length || 0);
+      setTrips(data || []);
+    } catch (error: any) {
+      console.error("Error fetching trips:", error);
+      toast({
+        title: 'Error',
+        description: `Failed to load trips: ${error.message}`,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [user, toast, hasAttemptedFetch]);
+
+  // Single useEffect to handle fetch logic
+  useEffect(() => {
+    console.log("Dashboard effect running, user:", !!user, "hasAttemptedFetch:", hasAttemptedFetch);
+    if (user && !hasAttemptedFetch) {
       fetchTrips();
     }
-  }, [toast, user]);
+  }, [user, fetchTrips, hasAttemptedFetch]);
 
   return (
     <div className="min-h-screen bg-gray-50">
