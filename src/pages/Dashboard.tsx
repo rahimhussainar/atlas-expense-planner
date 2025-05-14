@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,6 +33,10 @@ const Dashboard: React.FC = () => {
     console.log("Dashboard mounted");
     const fetchTrips = async () => {
       try {
+        setLoading(true);
+        
+        // With our fixed RLS policies, this query will now work correctly
+        // and only return trips the user has access to
         const { data, error } = await supabase
           .from('trips')
           .select('*')
@@ -43,6 +48,7 @@ const Dashboard: React.FC = () => {
 
         setTrips(data || []);
       } catch (error: any) {
+        console.error("Error fetching trips:", error);
         toast({
           title: 'Error',
           description: `Failed to load trips: ${error.message}`,
@@ -53,8 +59,10 @@ const Dashboard: React.FC = () => {
       }
     };
 
-    fetchTrips();
-  }, [toast]);
+    if (user) {
+      fetchTrips();
+    }
+  }, [toast, user]);
 
   return (
     <div className="min-h-screen bg-gray-50">
