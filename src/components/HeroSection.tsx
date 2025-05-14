@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { MapPin, Calendar, Users, CreditCard } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
-    <div className="w-full pt-8 md:pt-12 pb-12 md:py-16 px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center">
+    <div className="w-full pt-8 md:pt-12 pb-12 md:py-16 px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center bg-white">
       {/* Left side - Content */}
       <div className="w-full md:w-1/2 mb-8 md:mb-0 md:pr-8">
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 md:mb-6 text-gray-900">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const steps = [
@@ -26,7 +25,7 @@ const steps = [
 
 const HowItWorksSection: React.FC = () => {
   return (
-    <div id="how-it-works" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12">
+    <div id="how-it-works" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
@@ -43,10 +42,6 @@ const HowItWorksSection: React.FC = () => {
               <div className="mb-4 text-5xl font-bold text-atlas-blue/70">{step.number}</div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">{step.title}</h3>
               <p className="text-gray-600">{step.description}</p>
-              
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-atlas-blue/20 -ml-4"></div>
-              )}
             </div>
           ))}
         </div>

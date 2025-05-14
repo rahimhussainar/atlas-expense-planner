@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,14 +24,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onGoogleSignIn, isLoadin
 
   return (
     <div className="space-y-5">
-      <SocialAuthButton
-        onClick={onGoogleSignIn}
-        icon="/google.svg"
-        label="Sign in with Google"
-      />
-
-      <AuthSeparator text="or continue with email" />
-
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-1.5">
           <label htmlFor="login-email" className="block text-sm font-medium text-gray-700">
@@ -51,7 +42,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onGoogleSignIn, isLoadin
             <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           </div>
         </div>
-        
         <div className="space-y-1.5">
           <label htmlFor="login-password" className="block text-sm font-medium text-gray-700">
             Password
@@ -63,20 +53,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onGoogleSignIn, isLoadin
             placeholder="Enter your password"
           />
         </div>
-        
         <div className="text-right">
-          <a href="#" className="text-sm text-atlas-forest hover:underline">
-            Forgot password?
-          </a>
+          <button type="button" className="text-sm text-atlas-forest hover:underline bg-transparent border-0 p-0">Forgot password?</button>
         </div>
-
         <Button
           type="submit"
           className="w-full h-11 bg-atlas-forest hover:bg-atlas-forest/90 text-sm font-medium rounded-lg"
           disabled={isLoading}
         >
-          {isLoading ? 'Signing In...' : 'Sign In'}
+          {isLoading ? 'Signing In...' : 'Login'}
         </Button>
+        <AuthSeparator text="or continue with" />
+        <SocialAuthButton
+          onClick={onGoogleSignIn}
+          icon="/google.svg"
+          label="Sign in with Google"
+        />
       </form>
     </div>
   );

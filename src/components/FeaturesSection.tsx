@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Users, CreditCard, Calendar, MapPin } from 'lucide-react';
 
@@ -27,7 +26,7 @@ const features = [
 
 const FeaturesSection: React.FC = () => {
   return (
-    <div id="features" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12">
+    <div id="features" className="w-full py-16 md:py-24 px-6 md:px-8 lg:px-12 bg-white">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
