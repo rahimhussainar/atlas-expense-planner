@@ -5,12 +5,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface ProfileAvatarProps {
   avatarUrl: string | null;
   userId: string;
   onAvatarUpdate: (url: string) => void;
 }
+
+// Helper function to get the correct MIME type based on file extension
+const getMimeType = (extension: string): string => {
+  const mimeTypes: Record<string, string> = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'svg': 'image/svg+xml',
+    'bmp': 'image/bmp',
+  };
+  
+  return mimeTypes[extension.toLowerCase()] || 'application/octet-stream';
+};
 
 const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps) => {
   const [uploading, setUploading] = useState(false);
@@ -25,18 +41,21 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
       }
 
       const file = event.target.files[0];
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop() || '';
+      
+      // Get the correct MIME type based on file extension
+      const contentType = getMimeType(fileExt);
       
       // Create a specific path that includes the user ID at the beginning
-      // This ensures it complies with our RLS policy
       const filePath = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      // Upload the file to the avatars bucket
+      // Upload the file to the avatars bucket with the correct content type
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: contentType // Set the correct content type
         });
 
       if (uploadError) {
@@ -91,6 +110,21 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
             src={avatarUrl} 
             alt="Profile" 
             className="h-full w-full object-cover"
+            onError={(e) => {
+              // If image fails to load, show fallback
+              const target = e.target as HTMLImageElement;
+              console.log('Image failed to load:', target.src);
+              target.onerror = null; // Prevent infinite loop
+              target.style.display = 'none'; // Hide the broken image
+              // Show a fallback icon
+              const parent = target.parentElement;
+              if (parent) {
+                parent.classList.add('flex', 'items-center', 'justify-center');
+                const fallback = document.createElement('div');
+                fallback.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+                parent.appendChild(fallback);
+              }
+            }}
           />
         ) : (
           <div className="flex items-center justify-center h-full w-full bg-gray-200">
