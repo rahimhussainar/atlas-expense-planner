@@ -86,7 +86,6 @@ const ProfileContainer = () => {
           <ArrowLeft className="h-4 w-4 mr-2" /> 
           Back to Dashboard
         </Button>
-        <h1 className="text-2xl font-bold">Your Profile</h1>
       </div>
 
       <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -99,7 +98,7 @@ const ProfileContainer = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="flex flex-col md:flex-row items-start gap-6">
                 {user && (
                   <>
                     <ProfileAvatar 

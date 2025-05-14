@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -85,7 +84,7 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative h-32 w-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg mb-2">
+      <div className="relative h-32 w-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg mb-3">
         {avatarUrl ? (
           <img 
             src={avatarUrl} 
@@ -105,22 +104,18 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
         )}
       </div>
       
-      <div className="w-full">
-        <Label htmlFor="avatar-upload" className="cursor-pointer">
-          <div className="flex items-center justify-center text-sm font-medium text-atlas-forest hover:text-atlas-forest/80 transition-colors">
-            <Upload size={16} className="mr-1" />
-            {avatarUrl ? 'Change Photo' : 'Upload Photo'}
-          </div>
-          <Input
-            id="avatar-upload"
-            type="file"
-            accept="image/*"
-            onChange={uploadAvatar}
-            disabled={uploading}
-            className="sr-only"
-          />
-        </Label>
-      </div>
+      <Label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center justify-center text-sm text-atlas-forest hover:text-atlas-forest/80 transition-colors">
+        <Upload size={16} className="mr-1" />
+        {avatarUrl ? 'Change Photo' : 'Upload Photo'}
+        <Input
+          id="avatar-upload"
+          type="file"
+          accept="image/*"
+          onChange={uploadAvatar}
+          disabled={uploading}
+          className="sr-only"
+        />
+      </Label>
     </div>
   );
 };
