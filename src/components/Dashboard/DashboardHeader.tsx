@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,13 +10,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/Logo';
+import { supabase } from '@/integrations/supabase/client';
 
 const DashboardHeader: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (user) {
+      fetchProfileAvatar();
+    }
+  }, [user]);
+  
+  const fetchProfileAvatar = async () => {
+    try {
+      if (!user) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching avatar:', error);
+        return;
+      }
+      
+      if (data?.avatar_url) {
+        // Add a cache busting parameter to force refresh
+        const cacheBuster = `?t=${new Date().getTime()}`;
+        setAvatarUrl(`${data.avatar_url}${cacheBuster}`);
+      }
+    } catch (error) {
+      console.error('Error in fetchProfileAvatar:', error);
+    }
+  };
   
   const getInitials = () => {
     if (!user?.email) return '?';
@@ -52,6 +85,16 @@ const DashboardHeader: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar>
+                  {avatarUrl ? (
+                    <AvatarImage 
+                      src={avatarUrl} 
+                      alt="Profile" 
+                      onError={() => {
+                        console.log("Avatar image failed to load");
+                        setAvatarUrl(null);
+                      }} 
+                    />
+                  ) : null}
                   <AvatarFallback className="bg-atlas-forest text-white">
                     {getInitials()}
                   </AvatarFallback>
