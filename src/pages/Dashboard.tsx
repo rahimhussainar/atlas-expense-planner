@@ -49,7 +49,21 @@ const Dashboard: React.FC = () => {
       }
 
       console.log("Trips fetched successfully:", data?.length || 0);
-      setTrips(data || []);
+      
+      // Map the database fields to match our Trip interface
+      const mappedTrips: Trip[] = data?.map(trip => ({
+        id: trip.id,
+        title: trip.trip_title, // Map trip_title to title
+        destination: trip.destination,
+        description: trip.description,
+        start_date: trip.start_date,
+        end_date: trip.end_date,
+        currency: 'USD', // Default currency since it doesn't exist in database
+        cover_image: trip.cover_image,
+        created_at: trip.created_at || new Date().toISOString(),
+      })) || [];
+      
+      setTrips(mappedTrips);
     } catch (error: any) {
       console.error("Error fetching trips:", error);
       toast({
