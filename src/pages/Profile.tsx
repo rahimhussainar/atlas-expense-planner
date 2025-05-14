@@ -98,37 +98,54 @@ const Profile = () => {
     try {
       setUploading(true);
       
-      if (!event.target.files || event.target.files.length === 0) {
+      if (!event.target.files || event.target.files.length === 0 || !user) {
         throw new Error('You must select an image to upload.');
       }
 
       const file = event.target.files[0];
       const fileExt = file.name.split('.').pop();
-      const filePath = `${user?.id}/${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      // Create a specific path that includes the user ID at the beginning
+      const userId = user.id;
+      const filePath = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-      // Upload the avatar to storage
-      const { error: uploadError } = await supabase.storage
+      // Upload the file to the avatars bucket
+      const { error: uploadError, data } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error details:', uploadError);
+        throw uploadError;
+      }
 
-      // Get public URL for the avatar
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
 
-      // Update the avatar URL in the profile
+      if (!publicUrlData.publicUrl) {
+        throw new Error('Failed to get public URL for the uploaded file');
+      }
+
+      // Update profile with the new avatar URL
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          avatar_url: data.publicUrl,
+          avatar_url: publicUrlData.publicUrl,
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', user?.id);
+        .eq('id', user.id);
 
       if (updateError) throw updateError;
 
+      // Update local state
       setProfileData({
         ...profileData,
-        avatarUrl: data.publicUrl,
+        avatarUrl: publicUrlData.publicUrl,
       });
 
       toast({
