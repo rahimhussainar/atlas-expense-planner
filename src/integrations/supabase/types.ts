@@ -32,7 +32,7 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: string
-          status: string | null
+          rsvp_status: string | null
           trip_id: string
           user_id: string | null
         }
@@ -40,7 +40,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
-          status?: string | null
+          rsvp_status?: string | null
           trip_id: string
           user_id?: string | null
         }
@@ -48,7 +48,7 @@ export type Database = {
           created_at?: string | null
           email?: string | null
           id?: string
-          status?: string | null
+          rsvp_status?: string | null
           trip_id?: string
           user_id?: string | null
         }
@@ -73,7 +73,7 @@ export type Database = {
           end_date: string | null
           id: string
           start_date: string | null
-          title: string
+          trip_title: string
           updated_at: string | null
         }
         Insert: {
@@ -86,7 +86,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           start_date?: string | null
-          title: string
+          trip_title: string
           updated_at?: string | null
         }
         Update: {
@@ -99,7 +99,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           start_date?: string | null
-          title?: string
+          trip_title?: string
           updated_at?: string | null
         }
         Relationships: []

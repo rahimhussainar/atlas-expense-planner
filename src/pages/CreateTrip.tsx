@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,16 +25,6 @@ import {
 } from '@/components/ui/select';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 
-const currencies = [
-  { value: 'USD', label: 'US Dollar (USD)' },
-  { value: 'EUR', label: 'Euro (EUR)' },
-  { value: 'GBP', label: 'British Pound (GBP)' },
-  { value: 'CAD', label: 'Canadian Dollar (CAD)' },
-  { value: 'AUD', label: 'Australian Dollar (AUD)' },
-  { value: 'JPY', label: 'Japanese Yen (JPY)' },
-  { value: 'CNY', label: 'Chinese Yuan (CNY)' },
-];
-
 const CreateTrip: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -46,12 +35,10 @@ const CreateTrip: React.FC = () => {
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [currency, setCurrency] = useState('USD');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!title.trim()) {
       toast({
         title: 'Required Field Missing',
@@ -60,7 +47,6 @@ const CreateTrip: React.FC = () => {
       });
       return;
     }
-    
     if (startDate && endDate && startDate > endDate) {
       toast({
         title: 'Invalid Dates',
@@ -69,31 +55,26 @@ const CreateTrip: React.FC = () => {
       });
       return;
     }
-    
     setIsLoading(true);
-    
     try {
       const { data, error } = await supabase
         .from('trips')
         .insert({
-          title,
+          trip_title: title,
           destination: destination || null,
           description: description || null,
           start_date: startDate?.toISOString() || null,
           end_date: endDate?.toISOString() || null,
-          currency,
+          cover_image: null, // or your default logic
           created_by: user!.id,
         })
         .select()
         .single();
-        
       if (error) throw error;
-      
       toast({
         title: 'Trip Created!',
         description: 'Your trip has been successfully created.',
       });
-      
       navigate('/dashboard');
     } catch (error: any) {
       toast({
@@ -192,22 +173,6 @@ const CreateTrip: React.FC = () => {
                     </PopoverContent>
                   </Popover>
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
-                <Select value={currency} onValueChange={setCurrency}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {currencies.map((curr) => (
-                      <SelectItem key={curr.value} value={curr.value}>
-                        {curr.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               
               <div className="space-y-2">

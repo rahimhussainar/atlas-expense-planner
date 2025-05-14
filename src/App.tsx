@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateTrip from "./pages/CreateTrip";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +35,11 @@ const App = () => (
             <Route path="/trips/new" element={
               <ProtectedRoute>
                 <CreateTrip />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
             
