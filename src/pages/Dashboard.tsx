@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import NewTripDialog from '@/components/Dashboard/NewTripDialog';

@@ -10,12 +10,69 @@ export const useTripActivities = (tripId: string | undefined) => {
   const { toast } = useToast();
   const [activities, setActivities] = useState<TripActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreator, setIsCreator] = useState(false);
+
+  const checkIsCreator = useCallback(async () => {
+    if (!tripId || !user) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('trips')
+        .select('created_by')
+        .eq('id', tripId)
+        .single();
+        
+      if (error) {
+        console.error("Error checking trip creator:", error);
+        return false;
+      }
+      
+      const creator = data?.created_by === user.id;
+      setIsCreator(creator);
+      return creator;
+    } catch (error) {
+      console.error("Error in checkIsCreator:", error);
+      return false;
+    }
+  }, [tripId, user]);
+
+  const checkIsParticipant = useCallback(async () => {
+    if (!tripId || !user) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('trip_participants')
+        .select('*')
+        .eq('trip_id', tripId)
+        .eq('user_id', user.id)
+        .eq('rsvp_status', 'accepted');
+        
+      if (error) {
+        console.error("Error checking trip participant:", error);
+        return false;
+      }
+      
+      return data && data.length > 0;
+    } catch (error) {
+      console.error("Error in checkIsParticipant:", error);
+      return false;
+    }
+  }, [tripId, user]);
 
   const fetchActivities = useCallback(async () => {
     if (!tripId || !user) return;
     
     try {
       setLoading(true);
+      
+      // Check if user is creator or participant
+      const creator = await checkIsCreator();
+      const participant = !creator ? await checkIsParticipant() : true;
+      
+      if (!creator && !participant) {
+        setActivities([]);
+        return;
+      }
       
       const { data, error } = await supabase
         .from('trip_activities')
@@ -43,7 +100,7 @@ export const useTripActivities = (tripId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  }, [tripId, user, toast]);
+  }, [tripId, user, toast, checkIsCreator, checkIsParticipant]);
 
   useEffect(() => {
     fetchActivities();
@@ -53,6 +110,18 @@ export const useTripActivities = (tripId: string | undefined) => {
     if (!user) return null;
     
     try {
+      // Check if user is creator or participant
+      const creator = await checkIsCreator();
+      const participant = !creator ? await checkIsParticipant() : true;
+      
+      if (!creator && !participant) {
+        toast({
+          title: 'Permission Denied',
+          description: 'Only trip participants can suggest activities.'
+        });
+        return null;
+      }
+      
       const { data, error } = await supabase
         .from('trip_activities')
         .insert({
@@ -85,6 +154,35 @@ export const useTripActivities = (tripId: string | undefined) => {
 
   const updateActivity = async (id: string, updates: Partial<TripActivity>) => {
     try {
+      // Check if user is creator or activity owner
+      const { data: activityData, error: activityError } = await supabase
+        .from('trip_activities')
+        .select('created_by, status')
+        .eq('id', id)
+        .single();
+        
+      if (activityError) throw activityError;
+      
+      const creator = await checkIsCreator();
+      
+      // Status changes are restricted to creator
+      if (updates.status && updates.status !== activityData.status && !creator) {
+        toast({
+          title: 'Permission Denied',
+          description: 'Only trip creators can change activity status.'
+        });
+        return false;
+      }
+      
+      // For other updates, check if user is creator or owner
+      if (!creator && activityData.created_by !== user?.id) {
+        toast({
+          title: 'Permission Denied',
+          description: 'You can only edit activities you created.'
+        });
+        return false;
+      }
+      
       const { error } = await supabase
         .from('trip_activities')
         .update(updates)
@@ -114,6 +212,26 @@ export const useTripActivities = (tripId: string | undefined) => {
 
   const deleteActivity = async (id: string) => {
     try {
+      // Check if user is creator or activity owner
+      const { data: activityData, error: activityError } = await supabase
+        .from('trip_activities')
+        .select('created_by')
+        .eq('id', id)
+        .single();
+        
+      if (activityError) throw activityError;
+      
+      const creator = await checkIsCreator();
+      
+      // Only allow creators or the person who created the activity to delete it
+      if (!creator && activityData.created_by !== user?.id) {
+        toast({
+          title: 'Permission Denied',
+          description: 'You can only delete activities you created.'
+        });
+        return false;
+      }
+      
       const { error } = await supabase
         .from('trip_activities')
         .delete()
@@ -144,6 +262,7 @@ export const useTripActivities = (tripId: string | undefined) => {
   return {
     activities,
     loading,
+    isCreator,
     fetchActivities,
     createActivity,
     updateActivity,

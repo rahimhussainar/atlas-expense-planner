@@ -10,12 +10,58 @@ export const useTripExpenses = (tripId: string | undefined) => {
   const { toast } = useToast();
   const [expenses, setExpenses] = useState<TripExpense[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCreator, setIsCreator] = useState(false);
+
+  const checkIsCreator = useCallback(async () => {
+    if (!tripId || !user) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('trips')
+        .select('created_by')
+        .eq('id', tripId)
+        .single();
+        
+      if (error) {
+        console.error("Error checking trip creator:", error);
+        return false;
+      }
+      
+      const creator = data?.created_by === user.id;
+      setIsCreator(creator);
+      return creator;
+    } catch (error) {
+      console.error("Error in checkIsCreator:", error);
+      return false;
+    }
+  }, [tripId, user]);
 
   const fetchExpenses = useCallback(async () => {
     if (!tripId || !user) return;
     
     try {
       setLoading(true);
+      
+      // Check if user is creator or participant
+      const creator = await checkIsCreator();
+      
+      if (!creator) {
+        // Check if user is a participant
+        const { data: participantData, error: participantError } = await supabase
+          .from('trip_participants')
+          .select('*')
+          .eq('trip_id', tripId)
+          .eq('user_id', user.id)
+          .eq('rsvp_status', 'accepted');
+          
+        if (participantError) throw participantError;
+        
+        // If not a participant, don't show expenses
+        if (!participantData || participantData.length === 0) {
+          setExpenses([]);
+          return;
+        }
+      }
       
       const { data, error } = await supabase
         .from('trip_expenses')
@@ -42,7 +88,7 @@ export const useTripExpenses = (tripId: string | undefined) => {
     } finally {
       setLoading(false);
     }
-  }, [tripId, user, toast]);
+  }, [tripId, user, toast, checkIsCreator]);
 
   useEffect(() => {
     fetchExpenses();
@@ -52,6 +98,30 @@ export const useTripExpenses = (tripId: string | undefined) => {
     if (!user) return null;
     
     try {
+      // Check if user is creator or participant
+      const creator = await checkIsCreator();
+      
+      if (!creator) {
+        // Check if user is a participant
+        const { data: participantData, error: participantError } = await supabase
+          .from('trip_participants')
+          .select('*')
+          .eq('trip_id', tripId)
+          .eq('user_id', user.id)
+          .eq('rsvp_status', 'accepted');
+          
+        if (participantError) throw participantError;
+        
+        // If not a participant, don't allow creating expenses
+        if (!participantData || participantData.length === 0) {
+          toast({
+            title: 'Permission Denied',
+            description: 'Only trip participants can add expenses.'
+          });
+          return null;
+        }
+      }
+      
       const { data, error } = await supabase
         .from('trip_expenses')
         .insert({
@@ -84,6 +154,26 @@ export const useTripExpenses = (tripId: string | undefined) => {
 
   const updateExpense = async (id: string, updates: Partial<TripExpense>) => {
     try {
+      // Check if user is creator or expense owner
+      const { data: expenseData, error: expenseError } = await supabase
+        .from('trip_expenses')
+        .select('created_by')
+        .eq('id', id)
+        .single();
+        
+      if (expenseError) throw expenseError;
+      
+      const creator = await checkIsCreator();
+      
+      // Only allow creators or the person who created the expense to update it
+      if (!creator && expenseData.created_by !== user?.id) {
+        toast({
+          title: 'Permission Denied',
+          description: 'You can only edit expenses you created.'
+        });
+        return false;
+      }
+      
       const { error } = await supabase
         .from('trip_expenses')
         .update(updates)
@@ -113,6 +203,26 @@ export const useTripExpenses = (tripId: string | undefined) => {
 
   const deleteExpense = async (id: string) => {
     try {
+      // Check if user is creator or expense owner
+      const { data: expenseData, error: expenseError } = await supabase
+        .from('trip_expenses')
+        .select('created_by')
+        .eq('id', id)
+        .single();
+        
+      if (expenseError) throw expenseError;
+      
+      const creator = await checkIsCreator();
+      
+      // Only allow creators or the person who created the expense to delete it
+      if (!creator && expenseData.created_by !== user?.id) {
+        toast({
+          title: 'Permission Denied',
+          description: 'You can only delete expenses you created.'
+        });
+        return false;
+      }
+      
       const { error } = await supabase
         .from('trip_expenses')
         .delete()
@@ -143,6 +253,7 @@ export const useTripExpenses = (tripId: string | undefined) => {
   return {
     expenses,
     loading,
+    isCreator,
     fetchExpenses,
     createExpense,
     updateExpense,
