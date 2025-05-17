@@ -81,7 +81,6 @@ const TripForm: React.FC<TripFormProps> = ({
       startDate,
       endDate,
       coverImage,
-      uploadImage,
     });
   };
 
@@ -125,7 +124,7 @@ const TripForm: React.FC<TripFormProps> = ({
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Add details about your trip..."
           rows={4}
-          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400 resize-y min-h-[80px] max-h-[300px]"
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
       </div>
 

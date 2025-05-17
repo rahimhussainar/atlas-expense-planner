@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +7,6 @@ import TripForm from '@/components/Dashboard/TripForm';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CreateTrip: React.FC = () => {
   const { user } = useAuth();
@@ -68,17 +68,11 @@ const CreateTrip: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Trip</h1>
           
           <div className="bg-white rounded-lg shadow p-6">
-            <div className="max-h-[70vh]">
-              <ScrollArea className="max-h-[calc(70vh-40px)]">
-                <div className="pr-4 pb-4">
-                  <TripForm
-                    onSubmit={handleSubmit}
-                    isLoading={isLoading}
-                    submitButtonText="Create Trip"
-                  />
-                </div>
-              </ScrollArea>
-            </div>
+            <TripForm
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              submitButtonText="Create Trip"
+            />
             <div className="mt-4 flex justify-start">
               <Button 
                 type="button" 
