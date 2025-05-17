@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Upload, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
@@ -30,6 +30,29 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        toast({
+          title: 'File too large',
+          description: 'Please select an image under 5MB',
+          variant: 'destructive',
+        });
+        return;
+      }
+      setCoverImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setCoverImage(null);
+    setPreviewUrl(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +74,24 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
     }
     setIsLoading(true);
     try {
+      let coverImageUrl = null;
+      
+      if (coverImage) {
+        const fileExt = coverImage.name.split('.').pop();
+        const fileName = `${user!.id}/${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from('trip-covers')
+          .upload(fileName, coverImage);
+          
+        if (uploadError) throw uploadError;
+        
+        const { data: { publicUrl } } = supabase.storage
+          .from('trip-covers')
+          .getPublicUrl(fileName);
+          
+        coverImageUrl = publicUrl;
+      }
+
       const { data, error } = await supabase
         .from('trips')
         .insert({
@@ -59,7 +100,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           description: description || null,
           start_date: startDate?.toISOString() || null,
           end_date: endDate?.toISOString() || null,
-          cover_image: null,
+          cover_image: coverImageUrl,
           created_by: user!.id,
         })
         .select()
@@ -173,6 +214,44 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           rows={4}
           className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Cover Image</Label>
+        <div className="mt-2">
+          {previewUrl ? (
+            <div className="relative group">
+              <img
+                src={previewUrl}
+                alt="Cover preview"
+                className="w-full h-48 object-cover rounded-lg"
+              />
+              <button
+                type="button"
+                onClick={removeImage}
+                className="absolute top-2 right-2 p-1 bg-black/50 rounded-full text-white hover:bg-black/70 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-atlas-forest transition-colors">
+              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                <p className="mb-2 text-sm text-gray-500">
+                  <span className="font-semibold">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 5MB)</p>
+              </div>
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+            </label>
+          )}
+        </div>
       </div>
       
       <div className="flex justify-end space-x-3 pt-4">

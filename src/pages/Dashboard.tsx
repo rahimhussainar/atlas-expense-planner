@@ -125,30 +125,42 @@ const Dashboard: React.FC = () => {
 
         {loading ? <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-atlas-forest" />
-          </div> : trips.length > 0 ? <Tabs defaultValue="upcoming" className="w-full">
-            <TabsList className="mb-6">
-              <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
-              <TabsTrigger value="past">Past Trips</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upcoming">
-              {upcomingTrips.length > 0 ? <TripsList trips={upcomingTrips} onTripDeleted={handleTripDeleted} /> : <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
-                  <Plus className="h-12 w-12 text-gray-300 mb-4" />
-                  <h2 className="font-semibold text-xl mb-2">No upcoming trips</h2>
-                  <p className="text-gray-600 mb-2">Start planning your next adventure!</p>
-                </div>}
-            </TabsContent>
-            <TabsContent value="past">
-              {pastTrips.length > 0 ? <TripsList trips={pastTrips} onTripDeleted={handleTripDeleted} /> : <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
-                  <Plus className="h-12 w-12 text-gray-300 mb-4" />
-                  <h2 className="font-semibold text-xl mb-2">No past trips</h2>
-                  <p className="text-gray-600">Your completed trips will appear here.</p>
-                </div>}
-            </TabsContent>
-          </Tabs> : <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
-            <Plus className="h-12 w-12 text-gray-300 mb-4" />
-            <h2 className="font-semibold text-xl mb-2">No trips yet</h2>
-            <p className="text-gray-600 mb-2">Create your first trip to start planning your adventure!</p>
-          </div>}
+          </div> : trips.length > 0 ? (
+            <Tabs defaultValue="upcoming" className="w-full">
+              <TabsList className="mb-6">
+                <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
+                <TabsTrigger value="past">Past Trips</TabsTrigger>
+              </TabsList>
+              <TabsContent value="upcoming">
+                {upcomingTrips.length > 0 ? (
+                  <TripsList trips={upcomingTrips} onTripDeleted={handleTripDeleted} />
+                ) : (
+                  <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+                    <Plus className="h-12 w-12 text-gray-300 mb-4" />
+                    <h2 className="font-semibold text-xl mb-2">No upcoming trips</h2>
+                    <p className="text-gray-600 mb-2">Start planning your next adventure!</p>
+                  </div>
+                )}
+              </TabsContent>
+              <TabsContent value="past">
+                {pastTrips.length > 0 ? (
+                  <TripsList trips={pastTrips} onTripDeleted={handleTripDeleted} />
+                ) : (
+                  <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+                    <Plus className="h-12 w-12 text-gray-300 mb-4" />
+                    <h2 className="font-semibold text-xl mb-2">No past trips</h2>
+                    <p className="text-gray-600">Your completed trips will appear here.</p>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+              <Plus className="h-12 w-12 text-gray-300 mb-4" />
+              <h2 className="font-semibold text-xl mb-2">No trips yet</h2>
+              <p className="text-gray-600 mb-2">Create your first trip to start planning your adventure!</p>
+            </div>
+          )}
       </main>
     </div>;
 };
