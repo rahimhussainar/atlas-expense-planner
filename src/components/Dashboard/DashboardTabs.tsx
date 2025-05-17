@@ -43,6 +43,7 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
           <div className="w-full border-t border-gray-200 my-8" />
         </section>
       )}
+      
       {/* Tabs for Upcoming and Past */}
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="mb-6">

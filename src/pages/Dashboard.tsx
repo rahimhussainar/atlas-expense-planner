@@ -16,13 +16,12 @@ const Dashboard: React.FC = () => {
   // Add a ref to track if we've already fetched to prevent multiple fetches
   const fetchedRef = useRef(false);
 
-  // Single useEffect to handle fetch logic with proper dependency management
+  // Fetch trips when component mounts or when user changes
   useEffect(() => {
-    // Only fetch if we have a user and haven't fetched yet
     if (user && !fetchedRef.current) {
       console.log("Dashboard effect running, user:", !!user);
-      fetchedRef.current = true; // Mark as fetched
       fetchTrips();
+      fetchedRef.current = true;
     }
   }, [user, fetchTrips]);
 
