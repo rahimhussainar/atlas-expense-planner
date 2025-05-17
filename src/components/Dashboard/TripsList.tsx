@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Clock, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Trip } from '@/pages/Dashboard';
+import { Trip } from '@/types/trip';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
