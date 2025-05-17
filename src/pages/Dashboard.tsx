@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,6 +55,7 @@ const Dashboard: React.FC = () => {
       }
       
       console.log("Trips fetched successfully:", data?.length || 0);
+      console.log("Raw trip data:", data);
 
       // Map the database fields to match our Trip interface
       const mappedTrips: Trip[] = data?.map(trip => ({
@@ -68,6 +70,7 @@ const Dashboard: React.FC = () => {
         created_at: trip.created_at || new Date().toISOString()
       })) || [];
       
+      console.log("Mapped trips:", mappedTrips);
       setTrips(mappedTrips);
     } catch (error: any) {
       console.error("Error fetching trips:", error);
@@ -101,6 +104,7 @@ const Dashboard: React.FC = () => {
 
   // Add function to trigger manual refresh
   const refreshTrips = useCallback(() => {
+    console.log("Manual refresh triggered");
     fetchedRef.current = false; // Allow fetch again
     fetchTrips();
   }, [fetchTrips]);
@@ -116,15 +120,18 @@ const Dashboard: React.FC = () => {
   });
 
   const handleTripCreated = () => {
+    console.log("Trip created, refreshing trips");
     setIsCreateModalOpen(false);
     refreshTrips();
   };
 
   const handleTripUpdated = () => {
+    console.log("Trip updated, refreshing trips");
     refreshTrips();
   };
 
   const handleTripDeleted = () => {
+    console.log("Trip deleted, refreshing trips");
     refreshTrips();
   };
 
@@ -159,6 +166,7 @@ const Dashboard: React.FC = () => {
             <TabsList className="mb-6">
               <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
               <TabsTrigger value="past">Past Trips</TabsTrigger>
+              <TabsTrigger value="all">All Trips</TabsTrigger> 
             </TabsList>
             <TabsContent value="upcoming">
               {upcomingTrips.length > 0 ? (
@@ -187,6 +195,21 @@ const Dashboard: React.FC = () => {
                   <Plus className="h-12 w-12 text-gray-300 mb-4" />
                   <h2 className="font-semibold text-xl mb-2">No past trips</h2>
                   <p className="text-gray-600">Your completed trips will appear here.</p>
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="all">
+              {trips.length > 0 ? (
+                <TripsList 
+                  trips={trips} 
+                  onTripDeleted={handleTripDeleted} 
+                  onTripUpdated={handleTripUpdated}
+                />
+              ) : (
+                <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+                  <Plus className="h-12 w-12 text-gray-300 mb-4" />
+                  <h2 className="font-semibold text-xl mb-2">No trips</h2>
+                  <p className="text-gray-600">All your trips will appear here.</p>
                 </div>
               )}
             </TabsContent>
