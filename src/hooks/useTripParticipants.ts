@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,9 +47,89 @@ export const useTripParticipants = (tripId: string | undefined) => {
     fetchParticipants();
   }, [fetchParticipants]);
 
+  const inviteParticipant = async (email: string) => {
+    if (!user || !tripId) return false;
+    
+    try {
+      // Check if already invited
+      const { data: existing } = await supabase
+        .from('trip_participants')
+        .select('id')
+        .eq('trip_id', tripId)
+        .eq('email', email);
+        
+      if (existing && existing.length > 0) {
+        toast({
+          title: 'Already Invited',
+          description: 'This person has already been invited to the trip.'
+        });
+        return false;
+      }
+      
+      const { error } = await supabase
+        .from('trip_participants')
+        .insert({
+          trip_id: tripId,
+          email: email,
+          rsvp_status: 'pending'
+        });
+        
+      if (error) throw error;
+      
+      toast({
+        title: 'Invitation Sent',
+        description: `An invitation has been sent to ${email}.`
+      });
+      
+      // Refresh participants
+      fetchParticipants();
+      
+      return true;
+    } catch (error: any) {
+      console.error("Error inviting participant:", error);
+      toast({
+        title: 'Error',
+        description: `Failed to send invitation: ${error.message}`,
+        variant: 'destructive'
+      });
+      return false;
+    }
+  };
+
+  const removeParticipant = async (participantId: string) => {
+    try {
+      const { error } = await supabase
+        .from('trip_participants')
+        .delete()
+        .eq('id', participantId);
+        
+      if (error) throw error;
+      
+      toast({
+        title: 'Participant Removed',
+        description: 'The participant has been removed from this trip.'
+      });
+      
+      // Refresh participants
+      fetchParticipants();
+      
+      return true;
+    } catch (error: any) {
+      console.error("Error removing participant:", error);
+      toast({
+        title: 'Error',
+        description: `Failed to remove participant: ${error.message}`,
+        variant: 'destructive'
+      });
+      return false;
+    }
+  };
+
   return {
     participants,
     loading,
     fetchParticipants,
+    inviteParticipant,
+    removeParticipant
   };
 };
