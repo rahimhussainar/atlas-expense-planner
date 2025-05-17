@@ -57,7 +57,7 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
         )}
         {/* Expandable section for more info */}
         {expanded && trip.description && (
-          <div className="mt-2 text-gray-700 text-sm whitespace-pre-line">
+          <div className="mt-2 text-gray-700 text-sm whitespace-pre-line break-words">
             {trip.description}
           </div>
         )}
