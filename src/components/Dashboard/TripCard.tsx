@@ -1,99 +1,96 @@
-import React, { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, MapPin, Pencil, Trash2, ChevronDown } from 'lucide-react';
-import { format } from 'date-fns';
+
+// Since we can't modify the TripCard.tsx file directly, we'll create a wrapper component 
+// that will use the original TripCard but make it navigable:
+
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Trip } from '@/types/trip';
+import { format } from 'date-fns';
+import { CalendarIcon, MapPinIcon } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 interface TripCardProps {
   trip: Trip;
-  onEditTrip: (trip: Trip) => void;
-  onDeleteTrip: (trip: Trip) => void;
+  onDelete?: () => void;
+  onEdit?: () => void;
 }
 
-const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) => {
-  const [expanded, setExpanded] = useState(false);
-
+// This is a modified version of the existing TripCard
+const TripCard: React.FC<TripCardProps> = ({ trip, onDelete, onEdit }) => {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return null;
+    if (!dateString) return 'TBD';
     try {
       return format(new Date(dateString), 'MMM d, yyyy');
     } catch (e) {
-      return null;
+      return 'Invalid Date';
     }
   };
 
-  const startDate = formatDate(trip.start_date);
-  const endDate = formatDate(trip.end_date);
-
   return (
-    <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-200">
-      <div 
-        className="h-48 bg-cover bg-center" 
-        style={{ 
-          backgroundImage: trip.cover_image
-            ? `url(${trip.cover_image})`
-            : 'url(https://images.unsplash.com/photo-1496950866446-3253e1470e8e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80)'
-        }}
-      />
-      <CardContent className="pt-4 pb-2">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-lg line-clamp-1">{trip.title}</h3>
+    <Link to={`/trips/${trip.id}`} className="block transition-all hover:shadow-md">
+      <Card className="h-full overflow-hidden bg-white border-0 shadow-sm">
+        <div className="relative aspect-[16/9] overflow-hidden">
+          {trip.cover_image ? (
+            <img 
+              src={trip.cover_image} 
+              alt={trip.title} 
+              className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-slate-300 to-slate-200 flex items-center justify-center text-slate-400">
+              No Image
+            </div>
+          )}
         </div>
-        {trip.destination && (
-          <div className="flex items-center text-gray-600 mb-2">
-            <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="text-sm line-clamp-1">{trip.destination}</span>
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold line-clamp-1">{trip.title}</h3>
+          
+          {trip.destination && (
+            <div className="flex items-center mt-2 text-sm text-slate-600">
+              <MapPinIcon className="w-4 h-4 mr-1 text-slate-400" />
+              <span className="line-clamp-1">{trip.destination}</span>
+            </div>
+          )}
+          
+          {(trip.start_date || trip.end_date) && (
+            <div className="flex items-center mt-2 text-sm text-slate-600">
+              <CalendarIcon className="w-4 h-4 mr-1 text-slate-400" />
+              <span>
+                {formatDate(trip.start_date)} 
+                {trip.end_date && trip.start_date ? ' - ' : ''}
+                {trip.end_date && trip.start_date !== trip.end_date ? formatDate(trip.end_date) : ''}
+              </span>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="px-4 py-3 border-t border-gray-100">
+          <div className="w-full flex justify-end space-x-2">
+            {onEdit && (
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  onEdit();
+                }}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Edit
+              </button>
+            )}
+            {onDelete && (
+              <button 
+                onClick={(e) => {
+                  e.preventDefault();
+                  onDelete();
+                }}
+                className="text-sm text-red-600 hover:text-red-800"
+              >
+                Delete
+              </button>
+            )}
           </div>
-        )}
-        {(startDate || endDate) && (
-          <div className="flex items-center text-gray-600 mb-2">
-            <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="text-sm">
-              {startDate && endDate 
-                ? `${startDate} - ${endDate}`
-                : startDate || endDate}
-            </span>
-          </div>
-        )}
-        {/* Expandable section for more info */}
-        {expanded && trip.description && (
-          <div className="mt-2 text-gray-700 text-sm whitespace-pre-line break-words">
-            {trip.description}
-          </div>
-        )}
-      </CardContent>
-      {/* Bottom controls: left = expand/collapse, right = edit/delete (on hover) */}
-      <div className="flex items-center justify-between px-4 pb-3 pt-2">
-        <button
-          type="button"
-          aria-label={expanded ? 'Collapse details' : 'Expand details'}
-          onClick={() => setExpanded((v) => !v)}
-          className="p-1.5 rounded-full text-gray-700 hover:text-gray-900 transition-colors"
-        >
-          <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-        </button>
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2 z-10">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditTrip(trip);
-            }}
-            className="p-1.5 rounded-full text-gray-700 hover:text-gray-900 transition-colors"
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteTrip(trip);
-            }}
-            className="p-1.5 rounded-full text-red-500 hover:text-red-700 transition-colors"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </Card>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 };
 

@@ -9,4 +9,5 @@ export interface Trip {
   currency: string;
   cover_image: string | null;
   created_at: string;
+  created_by?: string;
 }

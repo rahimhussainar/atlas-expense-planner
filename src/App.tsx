@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
+import TripDetail from "./pages/TripDetail";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,13 @@ const App = () => (
             <Route path="/profile" element={
               <ProtectedRoute>
                 <Profile />
+              </ProtectedRoute>
+            } />
+            
+            {/* Trip Detail Route */}
+            <Route path="/trips/:tripId" element={
+              <ProtectedRoute>
+                <TripDetail />
               </ProtectedRoute>
             } />
             
