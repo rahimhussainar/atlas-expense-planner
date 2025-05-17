@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TripsList from '@/components/Dashboard/TripsList';
@@ -23,17 +22,14 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
   currentTrips = []
 }) => {
   // Filter out current trips from upcoming for the tab
-  const upcomingTrips = React.useMemo(() => 
-    allUpcomingTrips.filter(trip => !currentTrips.some(ct => ct.id === trip.id)),
-  [allUpcomingTrips, currentTrips]);
+  const upcomingTrips = allUpcomingTrips.filter(trip => !currentTrips.some(ct => ct.id === trip.id));
 
   return (
     <div className="w-full">
       {/* Current Trips Section */}
       {currentTrips.length > 0 && (
         <section className="mb-8">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">Current Trip</h2>
+          <div className="mb-2">
             <TripsList 
               trips={currentTrips} 
               onTripDeleted={onTripDeleted} 
@@ -43,7 +39,6 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
           <div className="w-full border-t border-gray-200 my-8" />
         </section>
       )}
-      
       {/* Tabs for Upcoming and Past */}
       <Tabs defaultValue="upcoming" className="w-full">
         <TabsList className="mb-6">

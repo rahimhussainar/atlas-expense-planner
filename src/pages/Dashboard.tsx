@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import DashboardTabs from '@/components/Dashboard/DashboardTabs';
 import NewTripDialog from '@/components/Dashboard/NewTripDialog';
@@ -16,12 +16,13 @@ const Dashboard: React.FC = () => {
   // Add a ref to track if we've already fetched to prevent multiple fetches
   const fetchedRef = useRef(false);
 
-  // Fetch trips when component mounts or when user changes
+  // Single useEffect to handle fetch logic with proper dependency management
   useEffect(() => {
+    // Only fetch if we have a user and haven't fetched yet
     if (user && !fetchedRef.current) {
       console.log("Dashboard effect running, user:", !!user);
+      fetchedRef.current = true; // Mark as fetched
       fetchTrips();
-      fetchedRef.current = true;
     }
   }, [user, fetchTrips]);
 

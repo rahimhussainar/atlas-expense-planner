@@ -21,11 +21,10 @@ export const useTrips = () => {
       console.log("Fetching trips for user:", user.id);
       setLoading(true);
       
-      // Fetch all trips the user has access to
-      // This will use the RLS policy "Users can view their trips"
       const { data, error } = await supabase
         .from('trips')
         .select('*')
+        .eq('created_by', user.id)
         .order('created_at', { ascending: false });
         
       if (error) {
@@ -33,9 +32,10 @@ export const useTrips = () => {
       }
       
       console.log("Trips fetched successfully:", data?.length || 0);
-      
+      console.log("Raw trip data:", data);
+
       // Map the database fields to match our Trip interface
-      const mappedTrips: Trip[] = (data || []).map(trip => ({
+      const mappedTrips: Trip[] = data?.map(trip => ({
         id: trip.id,
         title: trip.trip_title, // Map trip_title to title
         destination: trip.destination,
@@ -44,10 +44,10 @@ export const useTrips = () => {
         end_date: trip.end_date,
         currency: 'USD', // Default currency since it doesn't exist in database
         cover_image: trip.cover_image,
-        created_at: trip.created_at || new Date().toISOString(),
-        created_by: trip.created_by
-      }));
+        created_at: trip.created_at || new Date().toISOString()
+      })) || [];
       
+      console.log("Mapped trips:", mappedTrips);
       setTrips(mappedTrips);
     } catch (error: any) {
       console.error("Error fetching trips:", error);

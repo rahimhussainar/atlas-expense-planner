@@ -24,27 +24,8 @@ export const useTripParticipants = (tripId: string | undefined) => {
         
       if (error) throw error;
       
-      // Check if the current user is a creator of this trip
-      const { data: tripData, error: tripError } = await supabase
-        .from('trips')
-        .select('created_by')
-        .eq('id', tripId)
-        .single();
-        
-      if (tripError && tripError.code !== 'PGRST116') throw tripError;
-      
-      const isCreator = tripData?.created_by === user.id;
-      
-      // Filter participants if not creator (only show self)
-      let filteredParticipants = data || [];
-      if (!isCreator) {
-        filteredParticipants = filteredParticipants.filter(
-          p => p.user_id === user.id || p.email === user.email
-        );
-      }
-      
       // Cast the data to ensure it matches our TripParticipant type
-      const typedParticipants = filteredParticipants?.map(participant => ({
+      const typedParticipants = data?.map(participant => ({
         ...participant,
         rsvp_status: participant.rsvp_status as 'pending' | 'accepted' | 'declined'
       })) || [];
@@ -85,23 +66,6 @@ export const useTripParticipants = (tripId: string | undefined) => {
         return false;
       }
       
-      // Check if user is creator (only creators should invite)
-      const { data: tripData, error: tripError } = await supabase
-        .from('trips')
-        .select('created_by')
-        .eq('id', tripId)
-        .single();
-        
-      if (tripError) throw tripError;
-      
-      if (tripData.created_by !== user.id) {
-        toast({
-          title: 'Permission Denied',
-          description: 'Only trip creators can invite participants.'
-        });
-        return false;
-      }
-      
       const { error } = await supabase
         .from('trip_participants')
         .insert({
@@ -134,37 +98,6 @@ export const useTripParticipants = (tripId: string | undefined) => {
 
   const removeParticipant = async (participantId: string) => {
     try {
-      // First check if user is creator (only creators should remove)
-      const { data: participant } = await supabase
-        .from('trip_participants')
-        .select('trip_id')
-        .eq('id', participantId)
-        .single();
-      
-      if (!participant) {
-        toast({
-          title: 'Error',
-          description: 'Participant not found.'
-        });
-        return false;
-      }
-      
-      const { data: tripData, error: tripError } = await supabase
-        .from('trips')
-        .select('created_by')
-        .eq('id', participant.trip_id)
-        .single();
-        
-      if (tripError) throw tripError;
-      
-      if (tripData.created_by !== user?.id) {
-        toast({
-          title: 'Permission Denied',
-          description: 'Only trip creators can remove participants.'
-        });
-        return false;
-      }
-      
       const { error } = await supabase
         .from('trip_participants')
         .delete()

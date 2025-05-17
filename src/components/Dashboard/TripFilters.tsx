@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trip } from '@/types/trip';
 
@@ -39,6 +38,7 @@ export const useFilterTrips = (trips: Trip[]) => {
 
   if (process.env.NODE_ENV === 'development' && debugInfo.length > 0) {
     // Only log once per filter run
+    // eslint-disable-next-line no-console
     console.log('TripFilters:', debugInfo.join(' | '));
   }
 
