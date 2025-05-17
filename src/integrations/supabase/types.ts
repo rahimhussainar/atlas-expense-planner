@@ -238,7 +238,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_trip_creator: {
+        Args: { trip_id: string }
+        Returns: boolean
+      }
+      is_trip_participant: {
+        Args: { trip_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
