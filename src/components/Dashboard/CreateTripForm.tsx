@@ -82,7 +82,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white">
       <div className="space-y-2">
         <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
         <Input 
@@ -91,6 +91,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Summer Vacation 2025"
           required
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
       </div>
       
@@ -101,6 +102,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           value={destination}
           onChange={(e) => setDestination(e.target.value)}
           placeholder="Paris, France"
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
       </div>
       
@@ -112,7 +114,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-full justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal bg-white",
                   !startDate && "text-muted-foreground"
                 )}
               >
@@ -120,7 +122,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
                 {startDate ? format(startDate, "PPP") : "Select date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 bg-white">
               <Calendar
                 mode="single"
                 selected={startDate}
@@ -138,7 +140,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
               <Button
                 variant={"outline"}
                 className={cn(
-                  "w-full justify-start text-left font-normal",
+                  "w-full justify-start text-left font-normal bg-white",
                   !endDate && "text-muted-foreground"
                 )}
               >
@@ -146,7 +148,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
                 {endDate ? format(endDate, "PPP") : "Select date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 bg-white">
               <Calendar
                 mode="single"
                 selected={endDate}
@@ -169,6 +171,7 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Add details about your trip..."
           rows={4}
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
       </div>
       

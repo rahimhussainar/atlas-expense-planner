@@ -51,6 +51,7 @@ const Dashboard: React.FC = () => {
       const { data, error } = await supabase
         .from('trips')
         .select('*')
+        .eq('created_by', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -64,7 +65,7 @@ const Dashboard: React.FC = () => {
         id: trip.id,
         title: trip.trip_title, // Map trip_title to title
         destination: trip.destination,
-        description: trip.description,
+        description: trip.description ?? '',
         start_date: trip.start_date,
         end_date: trip.end_date,
         currency: 'USD', // Default currency since it doesn't exist in database
@@ -148,17 +149,10 @@ const Dashboard: React.FC = () => {
               {upcomingTrips.length > 0 ? (
                 <TripsList trips={upcomingTrips} onTripDeleted={handleTripDeleted} />
               ) : (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
+                <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+                  <Plus className="h-12 w-12 text-gray-300 mb-4" />
                   <h2 className="font-semibold text-xl mb-2">No upcoming trips</h2>
-                  <p className="text-gray-600 mb-6">
-                    Start planning your next adventure!
-                  </p>
-                  <Button 
-                    onClick={() => setIsCreateModalOpen(true)} 
-                    className="bg-atlas-forest hover:bg-atlas-forest/90"
-                  >
-                    <Plus className="mr-2 h-4 w-4" /> Create Trip
-                  </Button>
+                  <p className="text-gray-600 mb-2">Start planning your next adventure!</p>
                 </div>
               )}
             </TabsContent>
@@ -166,27 +160,19 @@ const Dashboard: React.FC = () => {
               {pastTrips.length > 0 ? (
                 <TripsList trips={pastTrips} onTripDeleted={handleTripDeleted} />
               ) : (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
+                <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+                  <Plus className="h-12 w-12 text-gray-300 mb-4" />
                   <h2 className="font-semibold text-xl mb-2">No past trips</h2>
-                  <p className="text-gray-600">
-                    Your completed trips will appear here.
-                  </p>
+                  <p className="text-gray-600">Your completed trips will appear here.</p>
                 </div>
               )}
             </TabsContent>
           </Tabs>
         ) : (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="bg-white rounded-lg shadow flex flex-col items-center justify-center py-16 px-8">
+            <Plus className="h-12 w-12 text-gray-300 mb-4" />
             <h2 className="font-semibold text-xl mb-2">No trips yet</h2>
-            <p className="text-gray-600 mb-6">
-              Create your first trip to start planning your adventure!
-            </p>
-            <Button 
-              onClick={() => setIsCreateModalOpen(true)} 
-              className="bg-atlas-forest hover:bg-atlas-forest/90"
-            >
-              <Plus className="mr-2 h-4 w-4" /> Create Trip
-            </Button>
+            <p className="text-gray-600 mb-2">Create your first trip to start planning your adventure!</p>
           </div>
         )}
       </main>
