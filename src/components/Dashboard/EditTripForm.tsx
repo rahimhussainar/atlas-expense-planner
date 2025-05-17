@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -97,58 +98,56 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white px-4">
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
-          <Input 
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Summer Vacation 2025"
-            required
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="destination">Destination</Label>
-          <Input 
-            id="destination"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Paris, France"
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
-          />
-        </div>
-        
-        <TripDateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-        />
-        
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea 
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Add details about your trip..."
-            rows={4}
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
-          />
-        </div>
-
-        <TripImageUpload
-          previewUrl={previewUrl}
-          onImageChange={handleImageChange}
-          onRemoveImage={removeImage}
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white">
+      <div className="space-y-2">
+        <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
+        <Input 
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Summer Vacation 2025"
+          required
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white z-10">
+      <div className="space-y-2">
+        <Label htmlFor="destination">Destination</Label>
+        <Input 
+          id="destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          placeholder="Paris, France"
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+        />
+      </div>
+      
+      <TripDateRangePicker
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
+      
+      <div className="space-y-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea 
+          id="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Add details about your trip..."
+          rows={4}
+          className="bg-white border-gray-300 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
+        />
+      </div>
+
+      <TripImageUpload
+        previewUrl={previewUrl}
+        onImageChange={handleImageChange}
+        onRemoveImage={removeImage}
+      />
+      
+      <div className="flex justify-end space-x-3 pt-4">
         <Button 
           type="button" 
           variant="outline" 

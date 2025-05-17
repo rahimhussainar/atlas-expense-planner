@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ const Dashboard: React.FC = () => {
   }, [user?.id]);
 
   // Get filtered trips
-  const { allUpcomingTrips, pastTrips, currentTrips } = useFilterTrips(trips);
+  const { allUpcomingTrips, pastTrips } = useFilterTrips(trips);
 
   const handleTripCreated = () => {
     console.log("Trip created, refreshing trips");
@@ -78,7 +79,6 @@ const Dashboard: React.FC = () => {
             trips={trips} 
             allUpcomingTrips={allUpcomingTrips} 
             pastTrips={pastTrips}
-            currentTrips={currentTrips}
             onTripDeleted={handleTripDeleted} 
             onTripUpdated={handleTripUpdated}
           />

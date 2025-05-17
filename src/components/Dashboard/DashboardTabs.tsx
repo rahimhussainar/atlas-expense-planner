@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TripsList from '@/components/Dashboard/TripsList';
@@ -10,7 +11,6 @@ interface DashboardTabsProps {
   pastTrips: Trip[];
   onTripDeleted: () => void;
   onTripUpdated: () => void;
-  currentTrips?: Trip[];
 }
 
 const DashboardTabs: React.FC<DashboardTabsProps> = ({ 
@@ -18,63 +18,58 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
   allUpcomingTrips, 
   pastTrips, 
   onTripDeleted, 
-  onTripUpdated,
-  currentTrips = []
+  onTripUpdated 
 }) => {
-  // Filter out current trips from upcoming for the tab
-  const upcomingTrips = allUpcomingTrips.filter(trip => !currentTrips.some(ct => ct.id === trip.id));
-
   return (
-    <div className="w-full">
-      {/* Current Trips Section */}
-      {currentTrips.length > 0 && (
-        <section className="mb-8">
-          <div className="mb-2">
-            <TripsList 
-              trips={currentTrips} 
-              onTripDeleted={onTripDeleted} 
-              onTripUpdated={onTripUpdated}
-            />
-          </div>
-          <div className="w-full border-t border-gray-200 my-8" />
-        </section>
-      )}
-      {/* Tabs for Upcoming and Past */}
-      <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="mb-6">
-          <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
-          <TabsTrigger value="past">Past Trips</TabsTrigger>
-        </TabsList>
-        <TabsContent value="upcoming">
-          {upcomingTrips.length > 0 ? (
-            <TripsList 
-              trips={upcomingTrips} 
-              onTripDeleted={onTripDeleted} 
-              onTripUpdated={onTripUpdated}
-            />
-          ) : (
-            <EmptyTripState 
-              message="No upcoming trips" 
-              description="Start planning your next adventure!"
-            />
-          )}
-        </TabsContent>
-        <TabsContent value="past">
-          {pastTrips.length > 0 ? (
-            <TripsList 
-              trips={pastTrips} 
-              onTripDeleted={onTripDeleted} 
-              onTripUpdated={onTripUpdated}
-            />
-          ) : (
-            <EmptyTripState 
-              message="No past trips" 
-              description="Your completed trips will appear here."
-            />
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+    <Tabs defaultValue="upcoming" className="w-full">
+      <TabsList className="mb-6">
+        <TabsTrigger value="upcoming">Upcoming & Current</TabsTrigger>
+        <TabsTrigger value="past">Past Trips</TabsTrigger>
+        <TabsTrigger value="all">All Trips</TabsTrigger> 
+      </TabsList>
+      <TabsContent value="upcoming">
+        {allUpcomingTrips.length > 0 ? (
+          <TripsList 
+            trips={allUpcomingTrips} 
+            onTripDeleted={onTripDeleted} 
+            onTripUpdated={onTripUpdated}
+          />
+        ) : (
+          <EmptyTripState 
+            message="No upcoming trips" 
+            description="Start planning your next adventure!"
+          />
+        )}
+      </TabsContent>
+      <TabsContent value="past">
+        {pastTrips.length > 0 ? (
+          <TripsList 
+            trips={pastTrips} 
+            onTripDeleted={onTripDeleted} 
+            onTripUpdated={onTripUpdated}
+          />
+        ) : (
+          <EmptyTripState 
+            message="No past trips" 
+            description="Your completed trips will appear here."
+          />
+        )}
+      </TabsContent>
+      <TabsContent value="all">
+        {trips.length > 0 ? (
+          <TripsList 
+            trips={trips} 
+            onTripDeleted={onTripDeleted} 
+            onTripUpdated={onTripUpdated}
+          />
+        ) : (
+          <EmptyTripState 
+            message="No trips" 
+            description="All your trips will appear here."
+          />
+        )}
+      </TabsContent>
+    </Tabs>
   );
 };
 
