@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -32,6 +31,8 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // Add a ref to track if we've already fetched to prevent multiple fetches
+  const fetchedRef = React.useRef(false);
 
   // Memoize fetchTrips to prevent recreation on each render
   const fetchTrips = useCallback(async () => {
@@ -81,11 +82,28 @@ const Dashboard: React.FC = () => {
     }
   }, [user, toast]);
 
-  // Single useEffect to handle fetch logic
+  // Single useEffect to handle fetch logic with proper dependency management
   useEffect(() => {
-    console.log("Dashboard effect running, user:", !!user);
-    fetchTrips();
+    // Only fetch if we have a user and haven't fetched yet
+    if (user && !fetchedRef.current) {
+      console.log("Dashboard effect running, user:", !!user);
+      fetchedRef.current = true; // Mark as fetched
+      fetchTrips();
+    }
   }, [user, fetchTrips]);
+
+  // Reset fetchedRef when user changes
+  useEffect(() => {
+    return () => {
+      fetchedRef.current = false;
+    };
+  }, [user?.id]);
+
+  // Add function to trigger manual refresh
+  const refreshTrips = useCallback(() => {
+    fetchedRef.current = false; // Allow fetch again
+    fetchTrips();
+  }, [fetchTrips]);
 
   const upcomingTrips = trips.filter(trip => {
     const startDate = trip.start_date ? new Date(trip.start_date) : null;
@@ -99,15 +117,15 @@ const Dashboard: React.FC = () => {
 
   const handleTripCreated = () => {
     setIsCreateModalOpen(false);
-    fetchTrips();
+    refreshTrips();
   };
 
   const handleTripUpdated = () => {
-    fetchTrips();
+    refreshTrips();
   };
 
   const handleTripDeleted = () => {
-    fetchTrips();
+    refreshTrips();
   };
 
   return (
