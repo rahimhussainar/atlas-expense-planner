@@ -4,7 +4,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Clock, Pencil, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
 import { Trip } from '@/pages/Dashboard';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,18 +16,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import EditTripForm from './EditTripForm';
 
 interface TripsListProps {
   trips: Trip[];
   onTripDeleted?: () => void;
+  onTripUpdated?: () => void;
 }
 
-const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted }) => {
-  const navigate = useNavigate();
+const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted, onTripUpdated }) => {
   const { toast } = useToast();
   const [tripToDelete, setTripToDelete] = useState<Trip | null>(null);
+  const [tripToEdit, setTripToEdit] = useState<Trip | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
   const formatDate = (dateString: string | null) => {
@@ -71,7 +78,12 @@ const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted }) => {
   };
 
   const handleEdit = (trip: Trip) => {
-    navigate(`/trips/${trip.id}/edit`);
+    setTripToEdit(trip);
+  };
+
+  const handleUpdateSuccess = () => {
+    setTripToEdit(null);
+    onTripUpdated?.();
   };
   
   return (
@@ -154,6 +166,7 @@ const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted }) => {
         })}
       </div>
 
+      {/* Delete Trip Dialog */}
       <AlertDialog open={!!tripToDelete} onOpenChange={() => setTripToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -174,6 +187,22 @@ const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Edit Trip Dialog */}
+      <Dialog open={!!tripToEdit} onOpenChange={(open) => !open && setTripToEdit(null)}>
+        <DialogContent className="sm:max-w-[600px] bg-white">
+          <DialogHeader>
+            <DialogTitle>Edit Trip</DialogTitle>
+          </DialogHeader>
+          {tripToEdit && (
+            <EditTripForm 
+              trip={tripToEdit} 
+              onSuccess={handleUpdateSuccess} 
+              onCancel={() => setTripToEdit(null)} 
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
