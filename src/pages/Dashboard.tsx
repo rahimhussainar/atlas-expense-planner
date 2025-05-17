@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +7,15 @@ import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import TripsList from '@/components/Dashboard/TripsList';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import CreateTripForm from '../components/Dashboard/CreateTripForm';
 
 export interface Trip {
   id: string;
@@ -28,6 +36,7 @@ const Dashboard: React.FC = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Memoize fetchTrips to prevent recreation on each render
   const fetchTrips = useCallback(async () => {
@@ -84,6 +93,25 @@ const Dashboard: React.FC = () => {
     }
   }, [user, fetchTrips, hasAttemptedFetch]);
 
+  const upcomingTrips = trips.filter(trip => {
+    const startDate = trip.start_date ? new Date(trip.start_date) : null;
+    return startDate && startDate > new Date();
+  });
+
+  const pastTrips = trips.filter(trip => {
+    const endDate = trip.end_date ? new Date(trip.end_date) : null;
+    return endDate && endDate < new Date();
+  });
+
+  const handleTripCreated = () => {
+    setIsCreateModalOpen(false);
+    fetchTrips();
+  };
+
+  const handleTripDeleted = () => {
+    fetchTrips();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
@@ -91,12 +119,19 @@ const Dashboard: React.FC = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Your Trips</h1>
-          <Button 
-            onClick={() => navigate('/trips/new')} 
-            className="bg-atlas-forest hover:bg-atlas-forest/90"
-          >
-            <Plus className="mr-2 h-4 w-4" /> New Trip
-          </Button>
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-atlas-forest hover:bg-atlas-forest/90">
+                <Plus className="mr-2 h-4 w-4" /> New Trip
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>Create New Trip</DialogTitle>
+              </DialogHeader>
+              <CreateTripForm onSuccess={handleTripCreated} />
+            </DialogContent>
+          </Dialog>
         </div>
 
         {loading ? (
@@ -104,7 +139,42 @@ const Dashboard: React.FC = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-atlas-forest" />
           </div>
         ) : trips.length > 0 ? (
-          <TripsList trips={trips} />
+          <Tabs defaultValue="upcoming" className="w-full">
+            <TabsList className="mb-6">
+              <TabsTrigger value="upcoming">Upcoming Trips</TabsTrigger>
+              <TabsTrigger value="past">Past Trips</TabsTrigger>
+            </TabsList>
+            <TabsContent value="upcoming">
+              {upcomingTrips.length > 0 ? (
+                <TripsList trips={upcomingTrips} onTripDeleted={handleTripDeleted} />
+              ) : (
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                  <h2 className="font-semibold text-xl mb-2">No upcoming trips</h2>
+                  <p className="text-gray-600 mb-6">
+                    Start planning your next adventure!
+                  </p>
+                  <Button 
+                    onClick={() => setIsCreateModalOpen(true)} 
+                    className="bg-atlas-forest hover:bg-atlas-forest/90"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Create Trip
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="past">
+              {pastTrips.length > 0 ? (
+                <TripsList trips={pastTrips} onTripDeleted={handleTripDeleted} />
+              ) : (
+                <div className="bg-white rounded-lg shadow p-8 text-center">
+                  <h2 className="font-semibold text-xl mb-2">No past trips</h2>
+                  <p className="text-gray-600">
+                    Your completed trips will appear here.
+                  </p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         ) : (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <h2 className="font-semibold text-xl mb-2">No trips yet</h2>
@@ -112,7 +182,7 @@ const Dashboard: React.FC = () => {
               Create your first trip to start planning your adventure!
             </p>
             <Button 
-              onClick={() => navigate('/trips/new')} 
+              onClick={() => setIsCreateModalOpen(true)} 
               className="bg-atlas-forest hover:bg-atlas-forest/90"
             >
               <Plus className="mr-2 h-4 w-4" /> Create Trip
