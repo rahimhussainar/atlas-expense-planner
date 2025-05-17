@@ -7,6 +7,7 @@ import TripForm from '@/components/Dashboard/TripForm';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CreateTrip: React.FC = () => {
   const { user } = useAuth();
@@ -67,12 +68,16 @@ const CreateTrip: React.FC = () => {
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Trip</h1>
           
-          <div className="bg-white rounded-lg shadow p-6">
-            <TripForm
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-              submitButtonText="Create Trip"
-            />
+          <div className="bg-white rounded-lg shadow p-6 max-h-[80vh]">
+            <ScrollArea className="max-h-[calc(80vh-120px)] pr-4">
+              <div className="pb-4">
+                <TripForm
+                  onSubmit={handleSubmit}
+                  isLoading={isLoading}
+                  submitButtonText="Create Trip"
+                />
+              </div>
+            </ScrollArea>
             <div className="mt-4 flex justify-start">
               <Button 
                 type="button" 

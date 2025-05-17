@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import EditTripForm from './EditTripForm';
 
 interface EditTripDialogProps {
@@ -22,16 +23,20 @@ const EditTripDialog: React.FC<EditTripDialogProps> = ({
 }) => {
   return (
     <Dialog open={!!trip} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-white">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col bg-white">
+        <DialogHeader className="px-0">
           <DialogTitle>Edit Trip</DialogTitle>
         </DialogHeader>
         {trip && (
-          <EditTripForm 
-            trip={trip} 
-            onSuccess={onSuccess} 
-            onCancel={onClose} 
-          />
+          <ScrollArea className="flex-1 max-h-[calc(80vh-120px)] pr-4">
+            <div className="pb-4">
+              <EditTripForm 
+                trip={trip} 
+                onSuccess={onSuccess} 
+                onCancel={onClose} 
+              />
+            </div>
+          </ScrollArea>
         )}
       </DialogContent>
     </Dialog>
