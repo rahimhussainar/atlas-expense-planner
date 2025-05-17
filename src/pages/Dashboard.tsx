@@ -109,14 +109,31 @@ const Dashboard: React.FC = () => {
     fetchTrips();
   }, [fetchTrips]);
 
+  // Fix the filtering logic for upcoming and past trips
   const upcomingTrips = trips.filter(trip => {
-    const startDate = trip.start_date ? new Date(trip.start_date) : null;
-    return startDate && startDate > new Date();
+    // For upcoming trips: start_date must be in the future
+    if (!trip.start_date) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    const startDate = new Date(trip.start_date);
+    console.log(`Trip: ${trip.title}, Start date: ${startDate}, Is future: ${startDate >= today}`);
+    
+    return startDate >= today;
   });
 
   const pastTrips = trips.filter(trip => {
-    const endDate = trip.end_date ? new Date(trip.end_date) : null;
-    return endDate && endDate < new Date();
+    // For past trips: end_date must be in the past
+    if (!trip.end_date) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to beginning of day for accurate comparison
+    
+    const endDate = new Date(trip.end_date);
+    console.log(`Trip: ${trip.title}, End date: ${endDate}, Is past: ${endDate < today}`);
+    
+    return endDate < today;
   });
 
   const handleTripCreated = () => {
