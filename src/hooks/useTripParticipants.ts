@@ -38,7 +38,13 @@ export const useTripParticipants = (tripId: string | undefined) => {
         
       if (error) throw error;
       
-      setParticipants(data || []);
+      // Cast the data to ensure it matches our TripParticipant type
+      const typedParticipants = data?.map(participant => ({
+        ...participant,
+        rsvp_status: participant.rsvp_status as 'pending' | 'accepted' | 'declined'
+      })) || [];
+      
+      setParticipants(typedParticipants);
     } catch (error: any) {
       console.error("Error fetching participants:", error);
       toast({

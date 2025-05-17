@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTripExpenses } from '@/hooks/useTripExpenses';
 import {
   Dialog,
@@ -41,6 +42,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({
   onOpenChange,
   onSuccess
 }) => {
+  const { user } = useAuth();
   const { createExpense } = useTripExpenses(tripId);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -53,7 +55,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || !amount || !category) return;
+    if (!title || !amount || !category || !user) return;
     
     setIsLoading(true);
     
@@ -65,8 +67,9 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({
         amount: parseFloat(amount),
         currency,
         category,
-        paid_by: null, // For now - could be enhanced later
-        expense_date: date ? date.toISOString() : null
+        paid_by: null,
+        expense_date: date ? date.toISOString() : null,
+        created_by: user.id
       });
       
       // Reset form
@@ -194,7 +197,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({
             </Button>
             <Button 
               type="submit"
-              disabled={!title || !amount || isLoading}
+              disabled={!title || !amount || isLoading || !user}
             >
               {isLoading ? 'Adding...' : 'Add Expense'}
             </Button>

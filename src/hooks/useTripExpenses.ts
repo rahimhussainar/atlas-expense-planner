@@ -25,7 +25,13 @@ export const useTripExpenses = (tripId: string | undefined) => {
         
       if (error) throw error;
       
-      setExpenses(data || []);
+      // Cast the data to ensure it matches our TripExpense type
+      const typedExpenses = data?.map(expense => ({
+        ...expense,
+        category: expense.category as 'accommodation' | 'transportation' | 'food' | 'activity' | 'other'
+      })) || [];
+      
+      setExpenses(typedExpenses);
     } catch (error: any) {
       console.error("Error fetching expenses:", error);
       toast({
@@ -49,8 +55,7 @@ export const useTripExpenses = (tripId: string | undefined) => {
       const { data, error } = await supabase
         .from('trip_expenses')
         .insert({
-          ...expense,
-          created_by: user.id
+          ...expense
         })
         .select()
         .single();

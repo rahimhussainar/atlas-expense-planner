@@ -26,7 +26,13 @@ export const useTripActivities = (tripId: string | undefined) => {
         
       if (error) throw error;
       
-      setActivities(data || []);
+      // Cast the data to ensure it matches our TripActivity type
+      const typedActivities = data?.map(activity => ({
+        ...activity,
+        status: activity.status as 'suggested' | 'confirmed' | 'cancelled'
+      })) || [];
+      
+      setActivities(typedActivities);
     } catch (error: any) {
       console.error("Error fetching activities:", error);
       toast({
@@ -51,7 +57,6 @@ export const useTripActivities = (tripId: string | undefined) => {
         .from('trip_activities')
         .insert({
           ...activity,
-          created_by: user.id
         })
         .select()
         .single();

@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useTripActivities } from '@/hooks/useTripActivities';
 import {
   Dialog,
@@ -34,6 +35,7 @@ const CreateActivityDialog: React.FC<CreateActivityDialogProps> = ({
   onOpenChange,
   onSuccess
 }) => {
+  const { user } = useAuth();
   const { createActivity } = useTripActivities(tripId);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -44,7 +46,7 @@ const CreateActivityDialog: React.FC<CreateActivityDialogProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title) return;
+    if (!title || !user) return;
     
     setIsLoading(true);
     
@@ -56,6 +58,7 @@ const CreateActivityDialog: React.FC<CreateActivityDialogProps> = ({
         location: location || null,
         date: date ? date.toISOString() : null,
         status: 'suggested',
+        created_by: user.id
       });
       
       // Reset form
@@ -142,7 +145,7 @@ const CreateActivityDialog: React.FC<CreateActivityDialogProps> = ({
             </Button>
             <Button 
               type="submit"
-              disabled={!title || isLoading}
+              disabled={!title || isLoading || !user}
             >
               {isLoading ? 'Creating...' : 'Create Activity'}
             </Button>

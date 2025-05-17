@@ -1,7 +1,4 @@
 
-// Since we can't modify the TripCard.tsx file directly, we'll create a wrapper component 
-// that will use the original TripCard but make it navigable:
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Trip } from '@/types/trip';
@@ -11,12 +8,11 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 
 interface TripCardProps {
   trip: Trip;
-  onDelete?: () => void;
-  onEdit?: () => void;
+  onEditTrip?: (trip: Trip) => void;
+  onDeleteTrip?: (trip: Trip) => void;
 }
 
-// This is a modified version of the existing TripCard
-const TripCard: React.FC<TripCardProps> = ({ trip, onDelete, onEdit }) => {
+const TripCard: React.FC<TripCardProps> = ({ trip, onDeleteTrip, onEditTrip }) => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'TBD';
     try {
@@ -65,22 +61,22 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onDelete, onEdit }) => {
         </CardContent>
         <CardFooter className="px-4 py-3 border-t border-gray-100">
           <div className="w-full flex justify-end space-x-2">
-            {onEdit && (
+            {onEditTrip && (
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  onEdit();
+                  onEditTrip(trip);
                 }}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
                 Edit
               </button>
             )}
-            {onDelete && (
+            {onDeleteTrip && (
               <button 
                 onClick={(e) => {
                   e.preventDefault();
-                  onDelete();
+                  onDeleteTrip(trip);
                 }}
                 className="text-sm text-red-600 hover:text-red-800"
               >
