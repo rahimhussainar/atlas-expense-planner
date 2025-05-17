@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Trip } from '@/types/trip';
 import TripCard from './TripCard';
@@ -10,9 +9,10 @@ interface TripsListProps {
   trips: Trip[];
   onTripDeleted?: () => void;
   onTripUpdated?: () => void;
+  highlightCurrent?: boolean;
 }
 
-const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted, onTripUpdated }) => {
+const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted, onTripUpdated, highlightCurrent }) => {
   const [tripToEdit, setTripToEdit] = useState<Trip | null>(null);
   const { tripToDelete, setTripToDelete, isDeleting, handleDeleteTrip } = useTripActions(onTripDeleted);
 
@@ -34,6 +34,7 @@ const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted, onTripUpdat
             trip={trip} 
             onEditTrip={handleEdit} 
             onDeleteTrip={setTripToDelete} 
+            isCurrent={!!highlightCurrent}
           />
         ))}
       </div>

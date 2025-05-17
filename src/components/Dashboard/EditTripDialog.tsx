@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Trip } from '@/types/trip';
 import {
@@ -22,17 +21,19 @@ const EditTripDialog: React.FC<EditTripDialogProps> = ({
 }) => {
   return (
     <Dialog open={!!trip} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-white">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Edit Trip</DialogTitle>
         </DialogHeader>
-        {trip && (
-          <EditTripForm 
-            trip={trip} 
-            onSuccess={onSuccess} 
-            onCancel={onClose} 
-          />
-        )}
+        <div className="flex-1 overflow-y-auto pr-2">
+          {trip && (
+            <EditTripForm 
+              trip={trip} 
+              onSuccess={onSuccess} 
+              onCancel={onClose} 
+            />
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
