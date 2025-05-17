@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,8 +12,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // Only log on initial render
   React.useEffect(() => {
-    console.log("ProtectedRoute: loading", loading, "user", user);
-  }, [loading, user]);
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log("ProtectedRoute: loading", loading, "user", user);
+    }
+  }, []); // Only run once on mount
 
   // Show loading state while checking authentication
   if (loading) {
