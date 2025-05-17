@@ -5,3 +5,8 @@ project_id = "aqncxoewceqjaodhaavy"
 public = true
 file_size_limit = "5MB"
 allowed_mime_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+
+[storage.buckets.trip-covers]
+public = true
+file_size_limit = "5MB"
+allowed_mime_types = ["image/jpeg", "image/png", "image/gif", "image/webp"]

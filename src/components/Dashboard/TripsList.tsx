@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -94,30 +95,26 @@ const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted }) => {
                 }}
               />
               
-              {/* Overlay with edit/delete buttons */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
-                <Button
-                  variant="secondary"
-                  size="sm"
+              {/* Updated hover controls - positioned at bottom right */}
+              <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEdit(trip);
                   }}
+                  className="p-1.5 rounded-full bg-white/70 hover:bg-white text-gray-700 hover:text-gray-900 transition-colors"
                 >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setTripToDelete(trip);
                   }}
+                  className="p-1.5 rounded-full bg-white/70 hover:bg-white text-red-500 hover:text-red-700 transition-colors"
                 >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
               
               <CardContent className="pt-4">
