@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -68,16 +67,18 @@ const CreateTrip: React.FC = () => {
         <div className="max-w-2xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Trip</h1>
           
-          <div className="bg-white rounded-lg shadow p-6 max-h-[80vh]">
-            <ScrollArea className="max-h-[calc(80vh-120px)] pr-4">
-              <div className="pb-4">
-                <TripForm
-                  onSubmit={handleSubmit}
-                  isLoading={isLoading}
-                  submitButtonText="Create Trip"
-                />
-              </div>
-            </ScrollArea>
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="max-h-[70vh]">
+              <ScrollArea className="max-h-[calc(70vh-40px)]">
+                <div className="pr-4 pb-4">
+                  <TripForm
+                    onSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    submitButtonText="Create Trip"
+                  />
+                </div>
+              </ScrollArea>
+            </div>
             <div className="mt-4 flex justify-start">
               <Button 
                 type="button" 

@@ -28,8 +28,8 @@ const EditTripDialog: React.FC<EditTripDialogProps> = ({
           <DialogTitle>Edit Trip</DialogTitle>
         </DialogHeader>
         {trip && (
-          <ScrollArea className="flex-1 max-h-[calc(80vh-120px)] pr-4">
-            <div className="pb-4">
+          <ScrollArea className="flex-1 max-h-[calc(80vh-120px)]">
+            <div className="pr-4 pb-4">
               <EditTripForm 
                 trip={trip} 
                 onSuccess={onSuccess} 

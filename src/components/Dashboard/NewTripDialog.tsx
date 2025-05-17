@@ -24,8 +24,8 @@ const NewTripDialog: React.FC<NewTripDialogProps> = ({ isOpen, onOpenChange, onT
         <DialogHeader className="px-0">
           <DialogTitle>Create New Trip</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="flex-1 max-h-[calc(80vh-120px)] pr-4">
-          <div className="pb-4">
+        <ScrollArea className="flex-1 max-h-[calc(80vh-120px)]">
+          <div className="pr-4 pb-4">
             <CreateTripForm onSuccess={onTripCreated} />
           </div>
         </ScrollArea>
