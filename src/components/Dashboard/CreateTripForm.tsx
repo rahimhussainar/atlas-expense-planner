@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,12 +16,6 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
   const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     try {
-      let coverImageUrl = null;
-      
-      if (formData.coverImage) {
-        coverImageUrl = await formData.uploadImage(user!.id);
-      }
-
       const { data, error } = await supabase
         .from('trips')
         .insert({
@@ -31,12 +24,12 @@ const CreateTripForm: React.FC<CreateTripFormProps> = ({ onSuccess }) => {
           description: formData.description || null,
           start_date: formData.startDate?.toISOString() || null,
           end_date: formData.endDate?.toISOString() || null,
-          cover_image: coverImageUrl,
+          cover_image: formData.coverImageUrl || null,
           created_by: user!.id,
         })
         .select()
         .single();
-        
+      
       if (error) throw error;
       
       toast({

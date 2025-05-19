@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +23,6 @@ export const useTrips = () => {
       const { data, error } = await supabase
         .from('trips')
         .select('*')
-        .eq('created_by', user.id)
         .order('created_at', { ascending: false });
         
       if (error) {
@@ -44,7 +42,8 @@ export const useTrips = () => {
         end_date: trip.end_date,
         currency: 'USD', // Default currency since it doesn't exist in database
         cover_image: trip.cover_image,
-        created_at: trip.created_at || new Date().toISOString()
+        created_at: trip.created_at || new Date().toISOString(),
+        created_by: trip.created_by
       })) || [];
       
       console.log("Mapped trips:", mappedTrips);

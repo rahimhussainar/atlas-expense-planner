@@ -38,6 +38,7 @@ const TripForm: React.FC<TripFormProps> = ({
   submitButtonText
 }) => {
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const [title, setTitle] = useState(initialValues.title);
   const [destination, setDestination] = useState(initialValues.destination);
@@ -73,13 +74,18 @@ const TripForm: React.FC<TripFormProps> = ({
       return;
     }
 
+    let coverImageUrl = null;
+    if (coverImage && uploadImage && user) {
+      coverImageUrl = await uploadImage(user.id);
+    }
+
     await onSubmit({
       title,
       destination,
       description,
       startDate,
       endDate,
-      coverImage,
+      coverImageUrl,
     });
   };
 

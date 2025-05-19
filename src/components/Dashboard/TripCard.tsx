@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, MapPin, Pencil, Trash2, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { Trip } from '@/types/trip';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TripCardProps {
   trip: Trip;
@@ -14,6 +15,9 @@ interface TripCardProps {
 const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) => {
   const [expanded, setExpanded] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const isCreator = user && trip.created_by === user.id;
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
@@ -29,6 +33,18 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
 
   return (
     <Card className="group relative overflow-hidden hover:shadow-lg transition-all duration-200">
+      {/* Badge for creator/participant */}
+      <div className="absolute top-3 right-3 z-20">
+        {isCreator ? (
+          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 shadow-sm border border-green-200">
+            Creator
+          </span>
+        ) : (
+          <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 shadow-sm border border-blue-200">
+            Participant
+          </span>
+        )}
+      </div>
       {/* Only the image is clickable */}
       <div
         className="h-48 bg-cover bg-center cursor-pointer"
