@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,8 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Profile from "./pages/Profile";
-import TripDetail from "./pages/TripDetail";
-
+import TripDashboard from "./pages/TripDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -39,10 +37,10 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            {/* Trip Detail Route */}
+            {/* Trip Dashboard Route */}
             <Route path="/trips/:tripId" element={
               <ProtectedRoute>
-                <TripDetail />
+                <TripDashboard />
               </ProtectedRoute>
             } />
             

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -58,7 +57,7 @@ export const useTripExpenses = (tripId: string | undefined) => {
           ...expense
         })
         .select()
-        .single();
+        .maybeSingle();
         
       if (error) throw error;
       

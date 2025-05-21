@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,13 +24,12 @@ export const useTripDetail = (tripId: string | undefined) => {
           .from('trips')
           .select('*')
           .eq('id', tripId)
-          .single();
+          .maybeSingle();
           
         if (error) throw error;
         
         if (!data) {
-          setError('Trip not found');
-          return;
+          throw new Error('Trip not found');
         }
         
         // Check if user is the creator

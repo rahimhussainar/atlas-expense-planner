@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,12 +9,14 @@ export const useTripParticipants = (tripId: string | undefined) => {
   const { toast } = useToast();
   const [participants, setParticipants] = useState<TripParticipant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchParticipants = useCallback(async () => {
     if (!tripId || !user) return;
     
     try {
       setLoading(true);
+      setError(null);
       
       const { data, error } = await supabase
         .from('trip_participants')
@@ -32,6 +33,7 @@ export const useTripParticipants = (tripId: string | undefined) => {
       
       setParticipants(typedParticipants);
     } catch (error: any) {
+      setError(error.message || 'Unknown error');
       console.error("Error fetching participants:", error);
       toast({
         title: 'Error',
@@ -128,6 +130,7 @@ export const useTripParticipants = (tripId: string | undefined) => {
   return {
     participants,
     loading,
+    error,
     fetchParticipants,
     inviteParticipant,
     removeParticipant

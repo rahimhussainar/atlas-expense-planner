@@ -1,21 +1,48 @@
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import { TripActivity } from '@/types/activity';
+
+// Debounce function
+const debounce = (func: Function, wait: number) => {
+  let timeout: NodeJS.Timeout;
+  return (...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+};
 
 export const useTripActivities = (tripId: string | undefined) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activities, setActivities] = useState<TripActivity[]>([]);
   const [loading, setLoading] = useState(true);
+  const debouncedFetchRef = useRef<(() => void) | null>(null);
+  const isFetchingRef = useRef(false);
+
+  // Check session on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      console.log("Current session:", session?.user?.id);
+      if (error) {
+        console.error("Session error:", error);
+      }
+    };
+    checkSession();
+  }, []);
 
   const fetchActivities = useCallback(async () => {
-    if (!tripId || !user) return;
+    if (!tripId || !user || isFetchingRef.current) {
+      console.log("Skipping fetch:", { tripId, userId: user?.id, isFetching: isFetchingRef.current });
+      return;
+    }
     
     try {
+      isFetchingRef.current = true;
       setLoading(true);
+      console.log("Fetching activities for trip:", tripId);
       
       const { data, error } = await supabase
         .from('trip_activities')
@@ -24,7 +51,12 @@ export const useTripActivities = (tripId: string | undefined) => {
         .order('date', { ascending: true })
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+      
+      console.log("Activities fetched:", data);
       
       // Cast the data to ensure it matches our TripActivity type
       const typedActivities = data?.map(activity => ({
@@ -42,12 +74,30 @@ export const useTripActivities = (tripId: string | undefined) => {
       });
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   }, [tripId, user, toast]);
 
+  // Set up debounced fetch on mount and when fetchActivities changes
   useEffect(() => {
-    fetchActivities();
+    debouncedFetchRef.current = debounce(() => {
+      fetchActivities();
+    }, 1000);
+
+    return () => {
+      if (debouncedFetchRef.current) {
+        // Clear any pending debounced calls
+        debouncedFetchRef.current = null;
+      }
+    };
   }, [fetchActivities]);
+
+  // Initial fetch
+  useEffect(() => {
+    if (debouncedFetchRef.current) {
+      debouncedFetchRef.current();
+    }
+  }, [tripId]); // Only re-run when tripId changes
 
   const createActivity = async (activity: Omit<TripActivity, 'id' | 'created_at' | 'updated_at'>) => {
     if (!user) return null;
@@ -59,7 +109,7 @@ export const useTripActivities = (tripId: string | undefined) => {
           ...activity,
         })
         .select()
-        .single();
+        .maybeSingle();
         
       if (error) throw error;
       
