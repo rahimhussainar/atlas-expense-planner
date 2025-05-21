@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import EditTripForm from './EditTripForm';
 
@@ -24,6 +25,9 @@ const EditTripDialog: React.FC<EditTripDialogProps> = ({
       <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Edit Trip</DialogTitle>
+          <DialogDescription>
+            Make changes to your trip details. Click save when you're done.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto pr-2">
           {trip && (

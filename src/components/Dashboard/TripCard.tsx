@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calendar, MapPin, Pencil, Trash2, ChevronDown } from 'lucide-react';
@@ -14,6 +14,8 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) => {
   const [expanded, setExpanded] = useState(false);
+  const [hasOverflow, setHasOverflow] = useState(false);
+  const descriptionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -27,6 +29,17 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
       return null;
     }
   };
+
+  // Check if description content overflows
+  useEffect(() => {
+    if (descriptionRef.current && trip.description) {
+      const element = descriptionRef.current;
+      const hasOverflowContent = element.scrollHeight > element.clientHeight;
+      setHasOverflow(hasOverflowContent);
+    } else {
+      setHasOverflow(false);
+    }
+  }, [trip.description]);
 
   const startDate = formatDate(trip.start_date);
   const endDate = formatDate(trip.end_date);
@@ -77,23 +90,30 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
             </span>
           </div>
         )}
-        {/* Description always visible, expanded shows full, collapsed shows line-clamp */}
+        {/* Description with dynamic height based on expanded state */}
         {trip.description && (
-          <div className={`mt-2 text-gray-700 text-sm whitespace-pre-line break-words ${expanded ? '' : 'line-clamp-2'}`}>
+          <div 
+            ref={descriptionRef}
+            className={`mt-2 text-gray-700 text-sm whitespace-pre-line break-words transition-all duration-200 ${
+              expanded ? '' : 'line-clamp-2'
+            }`}
+          >
             {trip.description}
           </div>
         )}
       </CardContent>
-      {/* Bottom controls: left = expand/collapse, right = edit/delete (on hover) */}
+      {/* Bottom controls: left = expand/collapse (only if content overflows), right = edit/delete (on hover) */}
       <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
-        <button
-          type="button"
-          aria-label={expanded ? 'Collapse details' : 'Expand details'}
-          onClick={() => setExpanded((v) => !v)}
-          className="p-1.5 rounded-full text-gray-700 hover:text-gray-900 transition-colors bg-transparent"
-        >
-          <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-        </button>
+        {hasOverflow && (
+          <button
+            type="button"
+            aria-label={expanded ? 'Collapse details' : 'Expand details'}
+            onClick={() => setExpanded((v) => !v)}
+            className="p-1.5 rounded-full text-gray-700 hover:text-gray-900 transition-colors bg-transparent"
+          >
+            <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+          </button>
+        )}
         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2 z-10">
           <button
             onClick={(e) => {

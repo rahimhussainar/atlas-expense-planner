@@ -36,13 +36,13 @@ const App = () => (
                 <Profile />
               </ProtectedRoute>
             } />
-            
-            {/* Trip Dashboard Route */}
-            <Route path="/trips/:tripId" element={
+            <Route path="/trips/:id" element={
               <ProtectedRoute>
                 <TripDashboard />
               </ProtectedRoute>
             } />
+            
+          
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />

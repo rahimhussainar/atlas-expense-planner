@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateTripForm from './CreateTripForm';
@@ -21,6 +21,9 @@ const NewTripDialog: React.FC<NewTripDialogProps> = ({ isOpen, onOpenChange, onT
       <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Create New Trip</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to create a new trip. You can add more details later.
+          </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto pr-2">
           <CreateTripForm onSuccess={onTripCreated} />

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -59,6 +58,7 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
       
       // Create a specific path that includes the user ID at the beginning
       const filePath = `${userId}/${Math.random().toString(36).substring(2)}.${fileExt}`;
+      console.log('Uploading file to path:', filePath);
 
       // Clear any existing avatar first to avoid storage clutter
       try {
@@ -67,31 +67,40 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
           .list(userId);
           
         if (listData && listData.length > 0) {
+          console.log('Found existing avatars:', listData);
           const filesToRemove = listData.map(item => `${userId}/${item.name}`);
-          await supabase.storage
+          const { error: removeError } = await supabase.storage
             .from('avatars')
             .remove(filesToRemove);
+          
+          if (removeError) {
+            console.error('Error removing old avatars:', removeError);
+          } else {
+            console.log('Successfully removed old avatars');
+          }
         }
       } catch (err) {
-        // If there's an error cleaning up old files, just continue with the upload
-        console.error('Error removing old avatar files:', err);
+        console.error('Error cleaning up old avatar files:', err);
       }
 
       // Upload the file to the avatars bucket with the correct content type
+      console.log('Uploading new avatar...');
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: true, // Changed to true to overwrite existing files
-          contentType: contentType // Set the correct content type
+          upsert: true,
+          contentType: contentType
         });
 
       if (uploadError) {
         console.error('Upload error details:', uploadError);
         throw uploadError;
       }
+      console.log('Successfully uploaded new avatar');
 
-      // Get the public URL
+      // Get the public URL for the uploaded file
+      console.log('Getting public URL...');
       const { data: publicUrlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
@@ -99,12 +108,10 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
       if (!publicUrlData.publicUrl) {
         throw new Error('Failed to get public URL for the uploaded file');
       }
+      console.log('Public URL:', publicUrlData.publicUrl);
 
-      // Add a cache-busting parameter to force refresh of the image
-      const cacheBuster = `?t=${new Date().getTime()}`;
-      const urlWithCacheBuster = `${publicUrlData.publicUrl}${cacheBuster}`;
-      
-      // Update profile with the new avatar URL (without cache buster in DB)
+      // Update profile with the new avatar URL
+      console.log('Updating profile with new avatar URL...');
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -113,9 +120,15 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
         })
         .eq('id', userId);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Profile update error:', updateError);
+        throw updateError;
+      }
+      console.log('Successfully updated profile with new avatar URL');
 
-      // Set our local state with the cache-busting URL
+      // Immediately update the local state with the new URL
+      const cacheBuster = `?t=${new Date().getTime()}`;
+      const urlWithCacheBuster = `${publicUrlData.publicUrl}${cacheBuster}`;
       setImageUrl(urlWithCacheBuster);
       
       // Call the callback with the new URL (without cache buster)

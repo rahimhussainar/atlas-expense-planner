@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
@@ -16,15 +16,19 @@ const Dashboard: React.FC = () => {
   // Add a ref to track if we've already fetched to prevent multiple fetches
   const fetchedRef = useRef(false);
 
-  // Single useEffect to handle fetch logic with proper dependency management
-  useEffect(() => {
-    // Only fetch if we have a user and haven't fetched yet
+  // Memoize the fetch callback
+  const fetchTripsCallback = useCallback(() => {
     if (user && !fetchedRef.current) {
       console.log("Dashboard effect running, user:", !!user);
-      fetchedRef.current = true; // Mark as fetched
+      fetchedRef.current = true;
       fetchTrips();
     }
   }, [user, fetchTrips]);
+
+  // Single useEffect to handle fetch logic with proper dependency management
+  useEffect(() => {
+    fetchTripsCallback();
+  }, [fetchTripsCallback]);
 
   // Reset fetchedRef when user changes
   useEffect(() => {
@@ -33,27 +37,64 @@ const Dashboard: React.FC = () => {
     };
   }, [user?.id]);
 
-  // Get filtered trips
+  // Get filtered trips with memoization
   const { allUpcomingTrips, pastTrips, currentTrips } = useFilterTrips(trips);
 
-  const handleTripCreated = () => {
+  // Memoize the handlers to prevent unnecessary re-renders
+  const handleTripCreated = useCallback(() => {
     console.log("Trip created, refreshing trips");
     setIsCreateModalOpen(false);
-    fetchedRef.current = false; // Allow fetch again
+    fetchedRef.current = false;
     fetchTrips();
-  };
+  }, [fetchTrips]);
 
-  const handleTripUpdated = () => {
+  const handleTripUpdated = useCallback(() => {
     console.log("Trip updated, refreshing trips");
-    fetchedRef.current = false; // Allow fetch again
+    fetchedRef.current = false;
     fetchTrips();
-  };
+  }, [fetchTrips]);
 
-  const handleTripDeleted = () => {
+  const handleTripDeleted = useCallback(() => {
     console.log("Trip deleted, refreshing trips");
-    fetchedRef.current = false; // Allow fetch again
+    fetchedRef.current = false;
     fetchTrips();
-  };
+  }, [fetchTrips]);
+
+  // Memoize the dialog open state handler
+  const handleDialogOpenChange = useCallback((open: boolean) => {
+    setIsCreateModalOpen(open);
+  }, []);
+
+  // Memoize the main content to prevent unnecessary re-renders
+  const mainContent = useMemo(() => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-atlas-forest" />
+        </div>
+      );
+    }
+
+    if (trips.length === 0) {
+      return (
+        <EmptyTripState 
+          message="No trips yet" 
+          description="Create your first trip to start planning your adventure!"
+        />
+      );
+    }
+
+    return (
+      <DashboardTabs 
+        trips={trips} 
+        allUpcomingTrips={allUpcomingTrips} 
+        pastTrips={pastTrips}
+        currentTrips={currentTrips}
+        onTripDeleted={handleTripDeleted} 
+        onTripUpdated={handleTripUpdated}
+      />
+    );
+  }, [loading, trips, allUpcomingTrips, pastTrips, currentTrips, handleTripDeleted, handleTripUpdated]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,33 +105,15 @@ const Dashboard: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Your Trips</h1>
           <NewTripDialog 
             isOpen={isCreateModalOpen} 
-            onOpenChange={setIsCreateModalOpen} 
+            onOpenChange={handleDialogOpenChange} 
             onTripCreated={handleTripCreated}
           />
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-atlas-forest" />
-          </div>
-        ) : trips.length > 0 ? (
-          <DashboardTabs 
-            trips={trips} 
-            allUpcomingTrips={allUpcomingTrips} 
-            pastTrips={pastTrips}
-            currentTrips={currentTrips}
-            onTripDeleted={handleTripDeleted} 
-            onTripUpdated={handleTripUpdated}
-          />
-        ) : (
-          <EmptyTripState 
-            message="No trips yet" 
-            description="Create your first trip to start planning your adventure!"
-          />
-        )}
+        {mainContent}
       </main>
     </div>
   );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);
