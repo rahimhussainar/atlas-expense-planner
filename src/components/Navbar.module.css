@@ -1,0 +1,18 @@
+.navbar-link {
+  color: #f3f4f6; /* light gray, fallback for dark mode */
+  font-weight: 500;
+  display: inline-block;
+  transition: color 0.18s cubic-bezier(0.4,0,0.2,1), transform 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+
+.navbar-link:hover {
+  color: #4A6C6F; /* atlas-forest */
+  transform: scale(1.04);
+}
+
+/* For dark mode, override color if needed */
+@media (prefers-color-scheme: dark) {
+  .navbar-link {
+    color: #e5e7eb;
+  }
+} 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -78,9 +77,9 @@ const ProfileContainer = () => {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center mb-6">
         <Button 
-          variant="ghost" 
-          onClick={() => navigate('/dashboard')} 
-          className="mr-2"
+          variant="ghost"
+          className="mr-2 text-atlas-forest hover:bg-atlas-forest hover:text-white transition-colors dark:text-white dark:hover:bg-atlas-forest dark:hover:text-white"
+          onClick={() => navigate('/dashboard')}
           aria-label="Back to dashboard"
         >
           <ArrowLeft className="h-4 w-4 mr-2" /> 
@@ -88,9 +87,9 @@ const ProfileContainer = () => {
         </Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
+      <div className="bg-card shadow rounded-lg overflow-hidden">
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xl font-semibold mb-4 text-card-foreground">Profile Information</h2>
 
           {loading ? (
             <div className="flex justify-center py-8">

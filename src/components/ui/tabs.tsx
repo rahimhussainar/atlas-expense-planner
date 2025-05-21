@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import * as TabsPrimitive from "@radix-ui/react-tabs"
 
@@ -29,8 +28,10 @@ const TabsTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-      // More distinguishable active state with bottom border
-      "data-[state=active]:text-atlas-forest data-[state=active]:font-semibold",
+      // Improved active/inactive state for readability, no underline
+      "data-[state=active]:text-white data-[state=active]:bg-atlas-forest/80 data-[state=active]:font-bold data-[state=active]:shadow-sm",
+      "dark:data-[state=active]:bg-atlas-forest/90",
+      "data-[state=inactive]:text-gray-400 hover:text-white",
       className
     )}
     {...props}

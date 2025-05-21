@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,7 +59,7 @@ const ProfileForm = ({ fullName, email, userId, onProfileUpdate }: ProfileFormPr
           id="fullName"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1"
+          className="mt-1 bg-muted"
         />
       </div>
       
@@ -73,9 +72,9 @@ const ProfileForm = ({ fullName, email, userId, onProfileUpdate }: ProfileFormPr
           type="email"
           value={email || ''}
           disabled
-          className="mt-1 bg-gray-50 text-gray-500"
+          className="mt-1 bg-muted text-muted-foreground"
         />
-        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+        <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
       </div>
 
       <div className="pt-4 flex justify-end">

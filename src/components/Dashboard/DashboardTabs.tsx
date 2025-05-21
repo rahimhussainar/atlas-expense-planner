@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TripsList from '@/components/Dashboard/TripsList';
 import EmptyTripState from '@/components/Dashboard/EmptyTripState';
 import { Trip } from '@/types/trip';
+import { Separator } from '@/components/ui/separator';
 
 interface DashboardTabsProps {
   trips: Trip[];
@@ -36,7 +37,7 @@ const DashboardTabs: React.FC<DashboardTabsProps> = ({
               onTripUpdated={onTripUpdated}
             />
           </div>
-          <div className="w-full border-t border-gray-200 my-8" />
+          <Separator className="my-8" />
         </section>
       )}
       {/* Tabs for Upcoming and Past */}

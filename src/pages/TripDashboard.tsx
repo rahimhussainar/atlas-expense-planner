@@ -2,9 +2,10 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import { Card } from '@/components/ui/card';
-import { Users, Activity as ActivityIcon, DollarSign, Calendar, Settings } from 'lucide-react';
+import { Users, Activity as ActivityIcon, DollarSign, Calendar, Settings, Sun, Moon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import StatCard from '@/components/Dashboard/StatCard';
+import { useTheme } from '@/components/ThemeProvider';
 
 const TripDashboard: React.FC = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const TripDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<any[]>([]);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,7 +95,7 @@ const TripDashboard: React.FC = () => {
 
   // Countdown label
   const countdownInfo = useMemo(() => {
-    if (!trip?.start_date || !trip?.end_date) return { label: '-', color: 'text-gray-900' };
+    if (!trip?.start_date || !trip?.end_date) return { label: '-', color: 'text-foreground' };
     const start = new Date(trip.start_date);
     const end = new Date(trip.end_date);
     const now = new Date();
@@ -102,11 +104,11 @@ const TripDashboard: React.FC = () => {
     now.setHours(0,0,0,0);
     if (now < start) {
       const diff = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      return { label: `${diff} days`, color: 'text-gray-900' };
+      return { label: `${diff} days`, color: 'text-foreground' };
     } else if (now >= start && now <= end) {
-      return { label: 'Trip in Progress', color: 'text-gray-900 font-semibold' };
+      return { label: 'Trip in Progress', color: 'text-foreground font-semibold' };
     } else {
-      return { label: 'Trip Ended', color: 'text-gray-400 font-semibold' };
+      return { label: 'Trip Ended', color: 'text-foreground font-semibold' };
     }
   }, [trip]);
 
@@ -157,7 +159,7 @@ const TripDashboard: React.FC = () => {
       ),
     },
     {
-      icon: <DollarSign className="text-yellow-500" size={22} />,
+      icon: <DollarSign className="text-atlas-forest" size={22} />,
       title: 'Expenses',
       value: `$${totalFixedCosts.toLocaleString()}`,
       subtitle: 'total fixed costs',
@@ -185,7 +187,7 @@ const TripDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       <DashboardHeader />
       <main className="max-w-6xl mx-auto px-4 py-10 animate-fade-in">
         <div className="flex items-center justify-between mb-10 gap-4 flex-wrap">
@@ -217,19 +219,19 @@ const TripDashboard: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="p-8 flex flex-col items-center h-48 justify-center">
-                <div className="font-semibold mb-2">Expense Breakdown</div>
-                <div className="text-gray-400">[Expense Chart Coming Soon]</div>
-              </Card>
+    <div className="font-semibold mb-2">Expense Breakdown</div>
+    <div className="text-gray-400">[Expense Chart Coming Soon]</div>
+  </Card>
               <Card className="p-8 flex flex-col items-center h-48 justify-center">
-                <div className="font-semibold mb-2">Upcoming Activities</div>
-                <div className="text-gray-400">[Activity Timeline Coming Soon]</div>
-              </Card>
+    <div className="font-semibold mb-2">Upcoming Activities</div>
+    <div className="text-gray-400">[Activity Timeline Coming Soon]</div>
+  </Card>
             </div>
           </>
-        )}
+      )}
       </main>
     </div>
-  );
+);
 };
 
 export default TripDashboard;

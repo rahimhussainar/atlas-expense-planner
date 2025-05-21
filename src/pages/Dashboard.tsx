@@ -7,6 +7,8 @@ import NewTripDialog from '@/components/Dashboard/NewTripDialog';
 import EmptyTripState from '@/components/Dashboard/EmptyTripState';
 import { useFilterTrips } from '@/components/Dashboard/TripFilters';
 import { useTrips } from '@/hooks/useTrips';
+import { useTheme } from '@/components/ThemeProvider';
+import { Sun, Moon } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -96,13 +98,14 @@ const Dashboard: React.FC = () => {
     );
   }, [loading, trips, allUpcomingTrips, pastTrips, currentTrips, handleTripDeleted, handleTripUpdated]);
 
+  const { theme, setTheme } = useTheme();
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       <DashboardHeader />
-      
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Your Trips</h1>
+          <h1 className="text-2xl font-bold text-foreground">Your Trips</h1>
           <NewTripDialog 
             isOpen={isCreateModalOpen} 
             onOpenChange={handleDialogOpenChange} 

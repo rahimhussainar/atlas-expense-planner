@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +33,27 @@
     --ring: 162 24% 36%;
 
     --radius: 0.5rem;
+  }
+  .dark {
+    --background: 220 7% 15%; /* neutral dark gray */
+    --foreground: 220 10% 96%; /* near white */
+    --card: 220 6% 19%; /* slightly lighter than bg */
+    --card-foreground: 220 10% 96%;
+    --popover: 220 6% 19%;
+    --popover-foreground: 220 10% 96%;
+    --primary: 162 24% 36%; /* atlas-forest */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 36 30% 60%; /* warm gold, softer */
+    --secondary-foreground: 220 40% 98%;
+    --muted: 220 4% 28%; /* neutral muted gray */
+    --muted-foreground: 220 5% 60%;
+    --accent: 24 30% 50%; /* atlas-rust, softened */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 4% 28%;
+    --input: 220 4% 28%;
+    --ring: 162 24% 36%;
   }
 }
 

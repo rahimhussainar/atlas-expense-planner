@@ -22,10 +22,10 @@ const EditTripDialog: React.FC<EditTripDialogProps> = ({
 }) => {
   return (
     <Dialog open={!!trip} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px] bg-background max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Edit Trip</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="pl-4">Edit Trip</DialogTitle>
+          <DialogDescription className="pl-4">
             Make changes to your trip details. Click save when you're done.
           </DialogDescription>
         </DialogHeader>

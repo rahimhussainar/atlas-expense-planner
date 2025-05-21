@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
@@ -34,7 +33,7 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
             <Button
               variant={"outline"}
               className={cn(
-                "w-full justify-start text-left font-normal bg-white",
+                "w-full justify-start text-left font-normal bg-card hover:bg-atlas-forest focus:bg-atlas-forest hover:text-primary-foreground focus:text-primary-foreground",
                 !startDate && "text-muted-foreground"
               )}
             >
@@ -42,7 +41,7 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
               {startDate ? format(startDate, "PPP") : "Select date"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white">
+          <PopoverContent className="w-auto p-0 bg-card">
             <Calendar
               mode="single"
               selected={startDate}
@@ -61,7 +60,7 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
             <Button
               variant={"outline"}
               className={cn(
-                "w-full justify-start text-left font-normal bg-white",
+                "w-full justify-start text-left font-normal bg-card hover:bg-atlas-forest focus:bg-atlas-forest hover:text-primary-foreground focus:text-primary-foreground",
                 !endDate && "text-muted-foreground"
               )}
             >
@@ -69,7 +68,7 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
               {endDate ? format(endDate, "PPP") : "Select date"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-white">
+          <PopoverContent className="w-auto p-0 bg-card">
             <Calendar
               mode="single"
               selected={endDate}

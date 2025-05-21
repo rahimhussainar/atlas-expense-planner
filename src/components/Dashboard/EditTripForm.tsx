@@ -97,8 +97,8 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white px-4">
-      <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-background px-4">
+      <div className="space-y-6 bg-background">
         <div className="space-y-2">
           <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
           <Input 
@@ -107,7 +107,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Summer Vacation 2025"
             required
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -118,7 +118,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             placeholder="Paris, France"
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -137,7 +137,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add details about your trip..."
             rows={4}
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
           />
         </div>
 
@@ -148,7 +148,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white z-10">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-background z-10">
         <Button 
           type="button" 
           variant="outline" 

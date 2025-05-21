@@ -18,10 +18,10 @@ const NewTripDialog: React.FC<NewTripDialogProps> = ({ isOpen, onOpenChange, onT
           <Plus className="mr-2 h-4 w-4" /> New Trip
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px] bg-background max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Create New Trip</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="pl-4">Create New Trip</DialogTitle>
+          <DialogDescription className="pl-4">
             Fill in the details below to create a new trip. You can add more details later.
           </DialogDescription>
         </DialogHeader>

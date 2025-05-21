@@ -90,8 +90,8 @@ const TripForm: React.FC<TripFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white px-4">
-      <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-background px-4">
+      <div className="space-y-6 bg-background">
         <div className="space-y-2">
           <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
           <Input 
@@ -100,7 +100,7 @@ const TripForm: React.FC<TripFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Summer Vacation 2025"
             required
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -111,7 +111,7 @@ const TripForm: React.FC<TripFormProps> = ({
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             placeholder="Paris, France"
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -130,7 +130,7 @@ const TripForm: React.FC<TripFormProps> = ({
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add details about your trip..."
             rows={4}
-            className="bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
+            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
           />
         </div>
 
@@ -141,7 +141,7 @@ const TripForm: React.FC<TripFormProps> = ({
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-background">
         <Button 
           type="submit" 
           className="bg-atlas-forest hover:bg-atlas-forest/90"
