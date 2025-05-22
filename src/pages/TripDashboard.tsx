@@ -2,68 +2,117 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import DashboardHeader from '@/components/Dashboard/DashboardHeader';
 import { Card } from '@/components/ui/card';
-import { Users, Activity as ActivityIcon, DollarSign, Calendar, Settings, Sun, Moon } from 'lucide-react';
+import { 
+  Users, 
+  Activity as ActivityIcon, 
+  DollarSign, 
+  Calendar, 
+  Settings, 
+  Plus,
+  UserPlus,
+  Receipt,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  HelpCircle,
+  XCircle,
+  ThumbsUp,
+  MessageSquare,
+  Upload,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  ChevronDown,
+  ExternalLink,
+  Ticket,
+  Pencil,
+  Trash,
+  Info as InfoIcon,
+  Star,
+  Car,
+  Building2
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import StatCard from '@/components/Dashboard/StatCard';
 import { useTheme } from '@/components/ThemeProvider';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import ActivityCard from '@/components/Dashboard/ActivityCard';
+import ParticipantCard from '@/components/Dashboard/ParticipantCard';
+import ExpenseCard from '@/components/Dashboard/ExpenseCard';
+import AddParticipantModal from '@/components/Dashboard/AddParticipantModal';
+import ImageUploadModal from '@/components/Dashboard/ImageUploadModal';
+import StatCardsSection from '@/components/Dashboard/StatCardsSection';
+import { useTripData } from '@/hooks/useTripData';
+import { useCountdown } from '@/hooks/useCountdown';
+import { useStatCards } from '@/hooks/useStatCards';
+
+// Helpers/constants outside the main component
+const categoryBadgeStyles = {
+  fun: 'bg-[#23272b] text-white dark:bg-[#23272b] dark:text-white',
+  food: 'bg-[#23272b] text-white dark:bg-[#23272b] dark:text-white',
+  sightseeing: 'bg-[#23272b] text-white dark:bg-[#23272b] dark:text-white',
+  default: 'bg-[#23272b] text-white dark:bg-[#23272b] dark:text-white',
+};
+
+function renderStars(rating: number) {
+  return Array.from({ length: 5 }).map((_, i) => (
+    <Star
+      key={i}
+      className={`h-4 w-4 ${i < Math.round(rating) ? 'fill-white text-white' : 'text-[#444] dark:text-[#444]'} stroke-1`}
+      fill={i < Math.round(rating) ? 'currentColor' : 'none'}
+    />
+  ));
+}
+
+function formatPricePerPerson(activity: any) {
+  return activity.priceType === 'per_person'
+    ? activity.price
+    : activity.totalPrice / 5;
+}
 
 const TripDashboard: React.FC = () => {
   const { id } = useParams();
-  const [trip, setTrip] = useState<any>(null);
-  const [participants, setParticipants] = useState<any[]>([]);
-  const [activities, setActivities] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [expenses, setExpenses] = useState<any[]>([]);
+  const { trip, participants, activities, expenses, loading, error } = useTripData(id);
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // Fetch trip
-        const { data: tripData, error: tripError } = await supabase
-          .from('trips')
-          .select('*')
-          .eq('id', id)
-          .single();
-        if (tripError) throw tripError;
-        setTrip(tripData);
-
-        // Fetch participants
-        const { data: participantData, error: participantError } = await supabase
-          .from('trip_participants')
-          .select('*')
-          .eq('trip_id', id);
-        if (participantError) throw participantError;
-        setParticipants(participantData || []);
-
-        // Fetch activities
-        const { data: activityData, error: activityError } = await supabase
-          .from('trip_activities')
-          .select('*')
-          .eq('trip_id', id);
-        if (activityError) throw activityError;
-        setActivities(activityData || []);
-
-        // Fetch expenses
-        const { data: expenseData, error: expenseError } = await supabase
-          .from('trip_expenses')
-          .select('*')
-          .eq('trip_id', id);
-        if (expenseError) throw expenseError;
-        setExpenses(expenseData || []);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load trip data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (id) fetchData();
-  }, [id]);
-
-  // Confirmed participants: RSVP status === 'confirmed' or 'accepted'
+  const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
+  const [newParticipant, setNewParticipant] = useState({
+    name: '',
+    email: '',
+    status: 'pending'
+  });
+  const [isImageUploadOpen, setIsImageUploadOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [expandedActivities, setExpandedActivities] = useState<number[]>([]);
+  const { countdownProgress, countdownInfo } = useCountdown(trip);
   const confirmedParticipants = useMemo(
     () => participants.filter(p => {
       const status = (p.rsvp_status || '').toLowerCase();
@@ -72,45 +121,20 @@ const TripDashboard: React.FC = () => {
     [participants]
   );
   const confirmedActivities = useMemo(() => activities.filter(a => a.status === 'confirmed'), [activities]);
+  const statCards = useStatCards({
+    participants,
+    confirmedParticipants,
+    activities,
+    confirmedActivities,
+    expenses,
+    trip,
+    countdownInfo,
+    countdownProgress
+  });
 
   // Progress bar logic
   const participantProgress = participants.length > 0 ? (confirmedParticipants.length / participants.length) * 100 : 0;
   const activityProgress = activities.length > 0 ? (confirmedActivities.length / activities.length) * 100 : 0;
-
-  // Countdown progress (trip progress)
-  const countdownProgress = useMemo(() => {
-    if (!trip?.start_date || !trip?.end_date) return 0;
-    const start = new Date(trip.start_date);
-    const end = new Date(trip.end_date);
-    const now = new Date();
-    start.setHours(0,0,0,0);
-    end.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-    if (now < start) return 0;
-    if (now > end) return 100;
-    const total = end.getTime() - start.getTime();
-    const elapsed = now.getTime() - start.getTime();
-    return Math.min(100, Math.max(0, (elapsed / total) * 100));
-  }, [trip]);
-
-  // Countdown label
-  const countdownInfo = useMemo(() => {
-    if (!trip?.start_date || !trip?.end_date) return { label: '-', color: 'text-foreground' };
-    const start = new Date(trip.start_date);
-    const end = new Date(trip.end_date);
-    const now = new Date();
-    start.setHours(0,0,0,0);
-    end.setHours(0,0,0,0);
-    now.setHours(0,0,0,0);
-    if (now < start) {
-      const diff = Math.ceil((start.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      return { label: `${diff} days`, color: 'text-foreground' };
-    } else if (now >= start && now <= end) {
-      return { label: 'Trip in Progress', color: 'text-foreground font-semibold' };
-    } else {
-      return { label: 'Trip Ended', color: 'text-foreground font-semibold' };
-    }
-  }, [trip]);
 
   // --- Expenses logic ---
   // For demo, let's assume fixed costs are in trip_expenses table with a 'type' or 'is_fixed' flag
@@ -120,71 +144,111 @@ const TripDashboard: React.FC = () => {
   const fixedCosts = useMemo(() => expenses.filter(e => e.is_fixed), [expenses]);
   const totalFixedCosts = useMemo(() => fixedCosts.reduce((sum, e) => sum + (e.amount || 0), 0), [fixedCosts]);
 
-  // Stat cards
-  const statCards = [
-    {
-      icon: <Users className="text-blue-500" size={22} />,
-      title: 'Participants',
-      value: confirmedParticipants.length,
-      subtitle: `confirmed of ${participants.length} invited`,
-      progressBar: (
-        <div className="w-full h-3 bg-blue-100 rounded-full overflow-hidden relative">
-          <div
-            className="absolute left-0 top-0 h-full bg-blue-500 rounded-full transition-all duration-300"
-            style={{ width: `${participantProgress}%`, zIndex: 2 }}
-          />
-          <div
-            className="absolute left-0 top-0 h-full bg-blue-300 rounded-full transition-all duration-300"
-            style={{ width: `${participants.length > 0 ? 100 : 0}%`, zIndex: 1 }}
-          />
-        </div>
-      ),
+  // Mock data for development
+  const mockParticipants = [
+    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'confirmed', owes: 150, owed: 75 },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'maybe', owes: 0, owed: 150 },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'declined', owes: 50, owed: 0 },
+  ];
+
+  const mockExpenses = [
+    { id: 1, description: 'Hotel Booking', amount: 300, purchaser: 'John Doe', date: '2024-03-15', category: 'accommodation' },
+    { id: 2, description: 'Dinner', amount: 150, purchaser: 'Jane Smith', date: '2024-03-16', category: 'food' },
+    { id: 3, description: 'Museum Tickets', amount: 80, purchaser: 'Bob Johnson', date: '2024-03-17', category: 'activities' },
+  ];
+
+  const mockActivities = [
+    { 
+      id: 1, 
+      title: 'Beach Day', 
+      description: 'Relaxing day at the beach with water activities and beach volleyball', 
+      price: 50, 
+      priceType: 'per_person', 
+      totalPrice: 250, // For 5 people
+      category: 'fun',
+      votes: 5,
+      proposedBy: 'John Doe',
+      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=60',
+      location: 'Sunset Beach, Miami',
+      businessName: 'Sunset Beach Club',
+      address: '123 Ocean Ave, Miami, FL',
+      rating: 4.5,
+      ratingCount: 120,
+      ticketLink: 'https://example.com/beach-tickets',
+      driveTime: 12,
     },
-    {
-      icon: <ActivityIcon className="text-emerald-500" size={22} />,
-      title: 'Activities',
-      value: confirmedActivities.length,
-      subtitle: `confirmed of ${activities.length} planned`,
-      progressBar: (
-        <div className="w-full h-3 bg-emerald-100 rounded-full overflow-hidden relative">
-          <div
-            className="absolute left-0 top-0 h-full bg-emerald-500 rounded-full transition-all duration-300"
-            style={{ width: `${activityProgress}%`, zIndex: 2 }}
-          />
-          <div
-            className="absolute left-0 top-0 h-full bg-emerald-200 rounded-full transition-all duration-300"
-            style={{ width: `${activities.length > 0 ? 100 : 0}%`, zIndex: 1 }}
-          />
-        </div>
-      ),
+    { 
+      id: 2, 
+      title: 'Group Dinner', 
+      description: 'Dinner at the famous local seafood restaurant with ocean views', 
+      price: 200, 
+      priceType: 'total', 
+      totalPrice: 200,
+      category: 'food',
+      votes: 3,
+      proposedBy: 'Jane Smith',
+      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop&q=60',
+      location: 'Ocean View Restaurant, 123 Beach Blvd',
+      businessName: 'Ocean View Restaurant',
+      address: '456 Beach Blvd, Miami, FL',
+      rating: 4.2,
+      ratingCount: 87,
+      ticketLink: 'https://example.com/restaurant-reservation',
+      driveTime: 5,
     },
-    {
-      icon: <DollarSign className="text-atlas-forest" size={22} />,
-      title: 'Expenses',
-      value: `$${totalFixedCosts.toLocaleString()}`,
-      subtitle: 'total fixed costs',
-      progressBar: null,
+    { 
+      id: 3, 
+      title: 'City Tour', 
+      description: 'Guided tour of historic landmarks and hidden gems', 
+      price: 75, 
+      priceType: 'per_person', 
+      totalPrice: 375, // For 5 people
+      category: 'sightseeing',
+      votes: 4,
+      proposedBy: 'Bob Johnson',
+      image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&auto=format&fit=crop&q=60',
+      location: 'Downtown Tour Center, Main Street',
+      businessName: 'Downtown Tour Center',
+      address: '789 Main St, Miami, FL',
+      rating: 4.8,
+      ratingCount: 210,
+      ticketLink: 'https://example.com/city-tour',
+      driveTime: 18,
     },
   ];
 
-  // Only show countdown card if trip hasn't started
-  const showCountdown = countdownInfo.label !== 'Trip in Progress' && countdownInfo.label !== 'Trip Ended';
-  if (showCountdown) {
-    statCards.push({
-      icon: <Calendar className="text-orange-500" size={22} />,
-      title: 'Countdown',
-      value: countdownInfo.label,
-      subtitle: countdownInfo.label === 'Trip in Progress' ? 'Trip has started' : countdownInfo.label === 'Trip Ended' ? 'Hope you had fun!' : 'until departure',
-      progressBar: (
-        <div className="w-full h-3 bg-orange-100 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-orange-500 rounded-full transition-all duration-300"
-            style={{ width: `${countdownProgress}%` }}
-          />
-        </div>
-      ),
-    });
-  }
+  // Add this function to handle adding participants
+  const handleAddParticipant = () => {
+    console.log('Adding participant:', newParticipant);
+    setIsParticipantModalOpen(false);
+    setNewParticipant({ name: '', email: '', status: 'pending' });
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedImage(file);
+      // Create a preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImageUrl(previewUrl);
+    }
+  };
+
+  const handleImageSubmit = () => {
+    if (selectedActivity) {
+      // Here you would typically upload the image to your storage service
+      // For now, we'll just update the mock data
+      console.log('Uploading image for activity:', selectedActivity.id);
+      console.log('Image URL:', imageUrl);
+      console.log('Uploaded file:', uploadedImage);
+      
+      // Close the modal and reset states
+      setIsImageUploadOpen(false);
+      setSelectedActivity(null);
+      setImageUrl('');
+      setUploadedImage(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -200,9 +264,19 @@ const TripDashboard: React.FC = () => {
               {trip?.destination ? ` · ${trip.destination}` : ''}
             </p>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
           <button className="ml-4 p-2 rounded-full text-gray-400 hover:text-gray-700 transition-colors" title="Trip Settings" aria-label="Trip Settings">
             <Settings size={24} />
           </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setIsParticipantModalOpen(true)}>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Manage Participants
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -212,21 +286,106 @@ const TripDashboard: React.FC = () => {
           <div className="text-center text-red-500 py-8">{error}</div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {statCards.map((stat) => (
-                <StatCard key={stat.title} {...stat} />
-              ))}
+            <StatCardsSection statCards={statCards} />
+            <div className="space-y-8">
+              {/* Participants Section - New Design */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold flex items-center">
+                    <Users className="mr-2 h-5 w-5 text-blue-500" />
+                    Trip Squad
+                  </h2>
+                  <Button variant="ghost" size="sm" onClick={() => setIsParticipantModalOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Invite
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mockParticipants.map((participant) => (
+                    <ParticipantCard key={participant.id} participant={participant} />
+                  ))}
+                </div>
+              </Card>
+
+              {/* Expenses Section - Card Stack Style */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold flex items-center">
+                    <Receipt className="mr-2 h-5 w-5 text-emerald-500" />
+                    Expense Tracker
+                  </h2>
+                  <Button variant="ghost" size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Expense
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mockExpenses.map((expense, index) => (
+                    <ExpenseCard key={expense.id} expense={expense} index={index} />
+                  ))}
+                </div>
+              </Card>
+
+              {/* Activities Section - Proposal Board Style */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold flex items-center">
+                    <ActivityIcon className="mr-2 h-5 w-5 text-orange-500" />
+                    Activity Proposals
+                  </h2>
+                  <Button variant="ghost" size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Suggest Activity
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {mockActivities.map((activity) => (
+                    <ActivityCard
+                      key={activity.id}
+                      activity={activity}
+                      expanded={expandedActivities.includes(activity.id)}
+                      onExpand={(open) => {
+                        setExpandedActivities(prev => 
+                          open 
+                            ? [...prev, activity.id]
+                            : prev.filter(id => id !== activity.id)
+                        );
+                      }}
+                      onImageUpload={handleImageUpload}
+                      onEdit={() => {
+                        setSelectedActivity(activity);
+                        setIsImageUploadOpen(true);
+                      }}
+                      onDelete={() => {
+                        // Implement delete logic
+                      }}
+                    />
+                  ))}
+                </div>
+              </Card>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="p-8 flex flex-col items-center h-48 justify-center">
-    <div className="font-semibold mb-2">Expense Breakdown</div>
-    <div className="text-gray-400">[Expense Chart Coming Soon]</div>
-  </Card>
-              <Card className="p-8 flex flex-col items-center h-48 justify-center">
-    <div className="font-semibold mb-2">Upcoming Activities</div>
-    <div className="text-gray-400">[Activity Timeline Coming Soon]</div>
-  </Card>
-            </div>
+
+            {/* Add Participant Modal */}
+            <AddParticipantModal
+              open={isParticipantModalOpen}
+              onOpenChange={setIsParticipantModalOpen}
+              newParticipant={newParticipant}
+              setNewParticipant={setNewParticipant}
+              onAddParticipant={handleAddParticipant}
+            />
+
+            {/* Image Upload Modal */}
+            <ImageUploadModal
+              open={isImageUploadOpen}
+              onOpenChange={setIsImageUploadOpen}
+              imageUrl={imageUrl}
+              setImageUrl={setImageUrl}
+              uploadedImage={uploadedImage}
+              setUploadedImage={setUploadedImage}
+              onImageUpload={handleImageUpload}
+              onImageSubmit={handleImageSubmit}
+              selectedActivity={selectedActivity}
+            />
           </>
       )}
       </main>
