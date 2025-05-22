@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Upload, X } from 'lucide-react';
@@ -8,12 +7,18 @@ interface TripImageUploadProps {
   previewUrl: string | null;
   onImageChange: (file: File | null) => void;
   onRemoveImage: () => void;
+  label?: string;
+  minimal?: boolean;
+  children?: React.ReactNode;
 }
 
 const TripImageUpload: React.FC<TripImageUploadProps> = ({ 
   previewUrl, 
   onImageChange, 
-  onRemoveImage 
+  onRemoveImage,
+  label = 'Cover Image',
+  minimal = false,
+  children,
 }) => {
   const { toast } = useToast();
 
@@ -33,9 +38,9 @@ const TripImageUpload: React.FC<TripImageUploadProps> = ({
   };
 
   return (
-    <div className="space-y-2">
-      <Label>Cover Image</Label>
-      <div className="mt-2">
+    <div className={minimal ? '' : 'space-y-2'}>
+      {!minimal && <Label>{label}</Label>}
+      <div className={minimal ? '' : 'mt-2'}>
         {previewUrl ? (
           <div className="relative group">
             <img
@@ -51,6 +56,16 @@ const TripImageUpload: React.FC<TripImageUploadProps> = ({
               <X className="h-4 w-4" />
             </button>
           </div>
+        ) : minimal ? (
+          <label className="w-full h-full flex items-center justify-center cursor-pointer">
+            {children}
+            <input
+              type="file"
+              className="hidden"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+          </label>
         ) : (
           <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-atlas-forest transition-colors">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">

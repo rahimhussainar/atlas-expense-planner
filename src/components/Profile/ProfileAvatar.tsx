@@ -187,7 +187,7 @@ const ProfileAvatar = ({ avatarUrl, userId, onAvatarUpdate }: ProfileAvatarProps
         )}
       </div>
       
-      <Label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center justify-center text-sm text-atlas-forest hover:text-atlas-forest/80 transition-colors">
+      <Label htmlFor="avatar-upload" className="cursor-pointer inline-flex items-center justify-center text-sm text-[#4a6c6f] hover:text-[#395457] transition-colors">
         <Upload size={16} className="mr-1" />
         {imageUrl ? 'Change Photo' : 'Upload Photo'}
         <Input

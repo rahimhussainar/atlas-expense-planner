@@ -1,4 +1,3 @@
-
 export interface TripActivity {
   id: string;
   trip_id: string;
@@ -10,6 +9,7 @@ export interface TripActivity {
   status: 'suggested' | 'confirmed' | 'cancelled';
   created_at: string;
   updated_at: string;
+  category?: string;
 }
 
 export interface ActivityVote {

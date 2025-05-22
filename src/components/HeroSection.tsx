@@ -26,14 +26,14 @@ const HeroSection: React.FC = () => {
           
           <div className="absolute top-16 md:top-20 -right-2 md:-right-4 animate-float delay-300">
             <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <Calendar className="text-atlas-forest h-4 w-4" />
+              <Calendar className="text-[#4a6c6f] h-4 w-4" />
               <span className="font-medium text-sm md:text-base text-card-foreground">June 10-16</span>
             </div>
           </div>
           
           <div className="absolute bottom-16 md:bottom-20 -left-6 md:-left-8 animate-float delay-500">
             <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <Users className="text-atlas-forest h-4 w-4" />
+              <Users className="text-[#4a6c6f] h-4 w-4" />
               <span className="font-medium text-sm md:text-base text-card-foreground">4 travelers</span>
             </div>
           </div>
@@ -47,8 +47,8 @@ const HeroSection: React.FC = () => {
           
           <div className="bg-atlas-rust/20 border-4 border-atlas-rust h-64 w-64 md:h-80 md:w-80 rounded-full flex items-center justify-center">
             <div className="bg-background h-3/5 w-3/5 rounded-full shadow-lg flex items-center justify-center">
-              <div className="bg-atlas-forest/30 h-2/3 w-2/3 rounded-full flex items-center justify-center">
-                <div className="bg-atlas-forest h-1/2 w-1/2 rounded-full flex items-center justify-center">
+              <div className="bg-[#4a6c6f]/30 h-2/3 w-2/3 rounded-full flex items-center justify-center">
+                <div className="bg-[#4a6c6f] h-1/2 w-1/2 rounded-full flex items-center justify-center">
                   <div className="bg-atlas-slate h-2/3 w-2/3 rounded-full"></div>
                 </div>
               </div>

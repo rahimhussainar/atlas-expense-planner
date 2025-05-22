@@ -97,8 +97,8 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-background px-4">
-      <div className="space-y-6 bg-background">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-[#23272b] px-4 rounded-xl">
+      <div className="space-y-6 bg-white dark:bg-[#23272b]">
         <div className="space-y-2">
           <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
           <Input 
@@ -148,7 +148,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-background z-10">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#23272b] z-10">
         <Button 
           type="button" 
           variant="outline" 
@@ -159,7 +159,7 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
         </Button>
         <Button 
           type="submit" 
-          className="bg-atlas-forest hover:bg-atlas-forest/90"
+          className="bg-[#4a6c6f] hover:bg-[#395457]"
           disabled={isLoading}
         >
           {isLoading ? 'Saving...' : 'Save Changes'}

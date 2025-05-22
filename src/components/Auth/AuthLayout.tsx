@@ -54,14 +54,14 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             <>
               {loginTab}
               <div className="mt-6 text-center text-sm text-muted-foreground">
-                Don't have an account? <button className="text-atlas-forest font-semibold hover:underline" onClick={() => setTab('register')}>Sign up</button>
+                Don't have an account? <button className="text-[#4a6c6f] font-semibold hover:underline" onClick={() => setTab('register')}>Sign up</button>
               </div>
             </>
           ) : (
             <>
               {registerTab}
               <div className="mt-6 text-center text-sm text-muted-foreground">
-                Already have an account? <button className="text-atlas-forest font-semibold hover:underline" onClick={() => setTab('login')}>Login</button>
+                Already have an account? <button className="text-[#4a6c6f] font-semibold hover:underline" onClick={() => setTab('login')}>Login</button>
               </div>
             </>
           )}

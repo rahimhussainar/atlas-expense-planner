@@ -54,7 +54,7 @@ export default {
 				},
                 // Consistent Trip Atlas colors
                 "atlas-slate": "#3F4B58",
-                "atlas-forest": "#4A6C6F",
+                "atlas-forest": "#4a6c6f",
                 "atlas-rust": "#A85751",
                 "atlas-gold": "#D6A656",
                 "atlas-gray": "#E5E7EB",

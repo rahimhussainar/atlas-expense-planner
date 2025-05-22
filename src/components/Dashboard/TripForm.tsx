@@ -90,8 +90,8 @@ const TripForm: React.FC<TripFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-background px-4">
-      <div className="space-y-6 bg-background">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-[#23272b] px-4 rounded-xl">
+      <div className="space-y-6 bg-white dark:bg-[#23272b]">
         <div className="space-y-2">
           <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
           <Input 
@@ -141,10 +141,10 @@ const TripForm: React.FC<TripFormProps> = ({
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-background">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#23272b]">
         <Button 
           type="submit" 
-          className="bg-atlas-forest hover:bg-atlas-forest/90"
+          className="bg-[#4a6c6f] hover:bg-[#395457]"
           disabled={isLoading}
         >
           {isLoading ? 'Processing...' : submitButtonText}

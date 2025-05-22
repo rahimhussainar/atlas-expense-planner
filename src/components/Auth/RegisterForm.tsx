@@ -47,7 +47,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
             placeholder="Enter your name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest"
+            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
             required
           />
           <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -64,7 +64,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest"
+            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
             required
           />
           <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
@@ -94,7 +94,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
       </div>
       <Button
         type="submit"
-        className="w-full h-11 bg-atlas-forest hover:bg-atlas-forest/90 text-sm font-medium rounded-lg"
+        className="w-full h-11 bg-[#4a6c6f] hover:bg-[#395457] text-sm font-medium rounded-lg"
         disabled={isLoading}
       >
         {isLoading ? 'Creating Account...' : 'Create Account'}

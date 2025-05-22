@@ -8,12 +8,12 @@ const features = [
     description: 'Create detailed trip plans with destinations, dates, and invite friends to join your adventures.'
   },
   {
-    icon: <CreditCard className="h-10 w-10 text-atlas-forest" />,
+    icon: <CreditCard className="h-10 w-10 text-[#4a6c6f]" />,
     title: 'Expense Tracking',
     description: 'Easily log expenses, categorize them, and see a clear breakdown of costs for everyone.'
   },
   {
-    icon: <Users className="h-10 w-10 text-atlas-forest" />,
+    icon: <Users className="h-10 w-10 text-[#4a6c6f]" />,
     title: 'Fair Splits',
     description: 'Split expenses evenly or customize how costs are shared among trip participants.'
   },

@@ -29,7 +29,9 @@ import {
   Info as InfoIcon,
   Star,
   Car,
-  Building2
+  Building2,
+  PartyPopper,
+  Map
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import StatCard from '@/components/Dashboard/StatCard';
@@ -39,6 +41,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
@@ -72,6 +75,9 @@ import StatCardsSection from '@/components/Dashboard/StatCardsSection';
 import { useTripData } from '@/hooks/useTripData';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useStatCards } from '@/hooks/useStatCards';
+import SuggestActivityDialog from '@/components/Dashboard/SuggestActivityDialog';
+import { useToast } from '@/components/ui/use-toast';
+
 
 // Helpers/constants outside the main component
 const categoryBadgeStyles = {
@@ -99,7 +105,19 @@ function formatPricePerPerson(activity: any) {
 
 const TripDashboard: React.FC = () => {
   const { id } = useParams();
-  const { trip, participants, activities, expenses, loading, error } = useTripData(id);
+  const { 
+    trip, 
+    participants, 
+    activities, 
+    expenses, 
+    loading, 
+    error,
+    handleVote,
+    getVoteCount,
+    hasUserVoted,
+    isAuthenticated,
+    refetch
+  } = useTripData(id);
   const { theme, setTheme } = useTheme();
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
   const [newParticipant, setNewParticipant] = useState({
@@ -157,66 +175,6 @@ const TripDashboard: React.FC = () => {
     { id: 3, description: 'Museum Tickets', amount: 80, purchaser: 'Bob Johnson', date: '2024-03-17', category: 'activities' },
   ];
 
-  const mockActivities = [
-    { 
-      id: 1, 
-      title: 'Beach Day', 
-      description: 'Relaxing day at the beach with water activities and beach volleyball', 
-      price: 50, 
-      priceType: 'per_person', 
-      totalPrice: 250, // For 5 people
-      category: 'fun',
-      votes: 5,
-      proposedBy: 'John Doe',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&auto=format&fit=crop&q=60',
-      location: 'Sunset Beach, Miami',
-      businessName: 'Sunset Beach Club',
-      address: '123 Ocean Ave, Miami, FL',
-      rating: 4.5,
-      ratingCount: 120,
-      ticketLink: 'https://example.com/beach-tickets',
-      driveTime: 12,
-    },
-    { 
-      id: 2, 
-      title: 'Group Dinner', 
-      description: 'Dinner at the famous local seafood restaurant with ocean views', 
-      price: 200, 
-      priceType: 'total', 
-      totalPrice: 200,
-      category: 'food',
-      votes: 3,
-      proposedBy: 'Jane Smith',
-      image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&auto=format&fit=crop&q=60',
-      location: 'Ocean View Restaurant, 123 Beach Blvd',
-      businessName: 'Ocean View Restaurant',
-      address: '456 Beach Blvd, Miami, FL',
-      rating: 4.2,
-      ratingCount: 87,
-      ticketLink: 'https://example.com/restaurant-reservation',
-      driveTime: 5,
-    },
-    { 
-      id: 3, 
-      title: 'City Tour', 
-      description: 'Guided tour of historic landmarks and hidden gems', 
-      price: 75, 
-      priceType: 'per_person', 
-      totalPrice: 375, // For 5 people
-      category: 'sightseeing',
-      votes: 4,
-      proposedBy: 'Bob Johnson',
-      image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800&auto=format&fit=crop&q=60',
-      location: 'Downtown Tour Center, Main Street',
-      businessName: 'Downtown Tour Center',
-      address: '789 Main St, Miami, FL',
-      rating: 4.8,
-      ratingCount: 210,
-      ticketLink: 'https://example.com/city-tour',
-      driveTime: 18,
-    },
-  ];
-
   // Add this function to handle adding participants
   const handleAddParticipant = () => {
     console.log('Adding participant:', newParticipant);
@@ -248,6 +206,133 @@ const TripDashboard: React.FC = () => {
       setImageUrl('');
       setUploadedImage(null);
     }
+  };
+
+  const [isSuggestActivityOpen, setIsSuggestActivityOpen] = useState(false);
+  const [suggestActivityMode, setSuggestActivityMode] = useState<'add' | 'edit'>('add');
+  const [activityToEdit, setActivityToEdit] = useState<any>(null);
+  const { toast } = useToast();
+  const [activityToDelete, setActivityToDelete] = useState<any>(null);
+  const [isDeletingActivity, setIsDeletingActivity] = useState(false);
+
+  // Handler to submit a new or edited activity
+  const handleSuggestActivity = async (activity: any) => {
+    if (!id) return;
+    const { id: activityId, title, description, business, place, category, costType, cost, thumbnail } = activity;
+    const { name, address, rating, website } = business || {};
+
+    // Get the current user
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData?.user?.id || null;
+    const userName = userData?.user?.user_metadata?.full_name || userData?.user?.email || 'Unknown';
+
+    // Get confirmed participants count
+    const { data: participantsData } = await supabase
+      .from('trip_participants')
+      .select('*')
+      .eq('trip_id', id)
+      .in('rsvp_status', ['confirmed', 'accepted']);
+    const confirmedParticipantsCount = participantsData?.length || 1;
+    let price = null;
+    let totalPrice = null;
+    if (cost !== '' && cost != null && !isNaN(Number(cost))) {
+      if (costType === 'perPerson') {
+        price = Number(cost);
+        totalPrice = price * confirmedParticipantsCount;
+      } else {
+        totalPrice = Number(cost);
+        price = totalPrice / confirmedParticipantsCount;
+      }
+    }
+
+    // --- IMAGE UPLOAD LOGIC ---
+    let imageUrl = null;
+    if (thumbnail && userId) {
+      const fileExt = thumbnail.name.split('.').pop();
+      const fileName = `${userId}/${Date.now()}.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from('activity-images')
+        .upload(fileName, thumbnail);
+      if (!uploadError) {
+        const { data: publicUrlData } = supabase.storage
+          .from('activity-images')
+          .getPublicUrl(fileName);
+        imageUrl = publicUrlData.publicUrl;
+      }
+    }
+
+    const payload = {
+      trip_id: id,
+      title: title || null,
+      description: description || null,
+      location: address || place || null,
+      created_by: userId,
+      status: 'suggested',
+      business_name: name || null,
+      business_address: address || null,
+      business_rating: rating || null,
+      business_website: website || null,
+      category: category || 'fun',
+      created_by_name: userName,
+      price_type: costType === 'perPerson' ? 'per_person' : 'total',
+      price: typeof price === 'number' && !isNaN(price) ? price : null,
+      total_price: typeof totalPrice === 'number' && !isNaN(totalPrice) ? totalPrice : null,
+      image: imageUrl || (activity.image || null),
+    };
+
+    if (activityId) {
+      // Edit mode: update existing activity
+      await supabase.from('trip_activities').update(payload).eq('id', activityId);
+    } else {
+      // Add mode: insert new activity
+      await supabase.from('trip_activities').insert(payload);
+    }
+    setIsSuggestActivityOpen(false);
+    setActivityToEdit(null);
+    setSuggestActivityMode('add');
+    refetch();
+  };
+
+  // Handler to open add modal
+  const openAddActivityModal = () => {
+    setActivityToEdit(null);
+    setSuggestActivityMode('add');
+    setIsSuggestActivityOpen(true);
+  };
+
+  // Handler to open edit modal
+  const openEditActivityModal = (activity: any) => {
+    setActivityToEdit(activity);
+    setSuggestActivityMode('edit');
+    setIsSuggestActivityOpen(true);
+  };
+
+  // Delete activity handler
+  const handleDeleteActivity = async (activity: any) => {
+    setActivityToDelete(activity);
+  };
+
+  const confirmDeleteActivity = async () => {
+    if (!activityToDelete) return;
+    setIsDeletingActivity(true);
+    try {
+      const { error } = await supabase
+        .from('trip_activities')
+        .delete()
+        .eq('id', activityToDelete.id);
+      if (error) throw error;
+      toast({ title: 'Activity Deleted', description: 'The activity has been deleted.' });
+      setActivityToDelete(null);
+      refetch();
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message || 'Failed to delete activity.', variant: 'destructive' });
+    } finally {
+      setIsDeletingActivity(false);
+    }
+  };
+
+  const cancelDeleteActivity = () => {
+    setActivityToDelete(null);
   };
 
   return (
@@ -333,35 +418,47 @@ const TripDashboard: React.FC = () => {
                     <ActivityIcon className="mr-2 h-5 w-5 text-orange-500" />
                     Activity Proposals
                   </h2>
-                  <Button variant="ghost" size="sm">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Suggest Activity
-                  </Button>
+                  {activities.length > 0 && (
+                    <Button variant="ghost" size="sm" onClick={openAddActivityModal}>
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Activity
+                    </Button>
+                  )}
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mockActivities.map((activity) => (
-                    <ActivityCard
-                      key={activity.id}
-                      activity={activity}
-                      expanded={expandedActivities.includes(activity.id)}
-                      onExpand={(open) => {
-                        setExpandedActivities(prev => 
-                          open 
-                            ? [...prev, activity.id]
-                            : prev.filter(id => id !== activity.id)
-                        );
-                      }}
-                      onImageUpload={handleImageUpload}
-                      onEdit={() => {
-                        setSelectedActivity(activity);
-                        setIsImageUploadOpen(true);
-                      }}
-                      onDelete={() => {
-                        // Implement delete logic
-                      }}
-                    />
-                  ))}
-                </div>
+                {activities.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <Map className="w-12 h-12 text-[#4a6c6f] mb-4" />
+                    <h3 className="text-2xl font-semibold mb-2 text-foreground">No activities yet!</h3>
+                    <p className="text-muted-foreground mb-6">Be the first to suggest an activity for this trip.</p>
+                    <Button variant="outline" size="icon" className="rounded-full border-[#4a6c6f] text-[#4a6c6f] hover:bg-[#e6f0f1]" aria-label="Suggest Activity" onClick={openAddActivityModal}>
+                      <Plus className="h-6 w-6" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {activities.map((activity) => (
+                      <ActivityCard
+                        key={activity.id}
+                        activity={activity}
+                        expanded={expandedActivities.includes(activity.id)}
+                        onExpand={(open) => {
+                          setExpandedActivities(prev => 
+                            open 
+                              ? [...prev, activity.id]
+                              : prev.filter(id => id !== activity.id)
+                          );
+                        }}
+                        onImageUpload={handleImageUpload}
+                        onEdit={() => openEditActivityModal(activity)}
+                        onDelete={() => handleDeleteActivity(activity)}
+                        onVote={handleVote}
+                        voteCount={getVoteCount(activity.id)}
+                        hasVoted={hasUserVoted(activity.id)}
+                        isAuthenticated={isAuthenticated}
+                      />
+                    ))}
+                  </div>
+                )}
               </Card>
             </div>
 
@@ -386,6 +483,31 @@ const TripDashboard: React.FC = () => {
               onImageSubmit={handleImageSubmit}
               selectedActivity={selectedActivity}
             />
+
+            <SuggestActivityDialog
+              isOpen={isSuggestActivityOpen}
+              onOpenChange={setIsSuggestActivityOpen}
+              onSubmit={handleSuggestActivity}
+              confirmedParticipantsCount={confirmedParticipants.length}
+              loading={false}
+              initialValues={activityToEdit}
+              mode={suggestActivityMode}
+            />
+
+            {activityToDelete && (
+              <Dialog open={!!activityToDelete} onOpenChange={cancelDeleteActivity}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Activity</DialogTitle>
+                    <DialogDescription>Are you sure you want to delete this activity? This action cannot be undone.</DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={cancelDeleteActivity} disabled={isDeletingActivity}>Cancel</Button>
+                    <Button variant="destructive" onClick={confirmDeleteActivity} disabled={isDeletingActivity}>{isDeletingActivity ? 'Deleting...' : 'Delete'}</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
           </>
       )}
       </main>

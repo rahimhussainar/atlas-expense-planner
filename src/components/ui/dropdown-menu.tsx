@@ -85,7 +85,7 @@ const DropdownMenuItem = React.forwardRef<
       "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors",
       gold
         ? "text-atlas-gold data-[state=active]:bg-atlas-gold/10 data-[state=active]:text-atlas-gold hover:bg-atlas-gold/10 hover:text-atlas-gold"
-        : "data-[state=active]:bg-atlas-forest/90 data-[state=active]:text-white hover:bg-atlas-forest/90 hover:text-white",
+        : "data-[state=active]:bg-[#395457] data-[state=active]:text-white hover:bg-[#395457] hover:text-white",
       inset && "pl-8",
       className
     )}
