@@ -113,6 +113,9 @@ const DashboardHeader: React.FC = () => {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/dashboard')} className="md:hidden">
+                Dashboard
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate('/profile')}>
                 Profile
               </DropdownMenuItem>

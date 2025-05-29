@@ -126,11 +126,11 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative bg-white dark:bg-[#23272b] rounded-xl">
+    <form onSubmit={handleSubmit} className="relative bg-background dark:bg-[#242529] rounded-xl">
       <div className="overflow-auto pb-24 max-h-[70vh]">
-        <div className="space-y-6 px-4 bg-white dark:bg-[#23272b]">
+        <div className="space-y-6 px-4 bg-background dark:bg-[#242529]">
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-border bg-muted flex items-center justify-center cursor-pointer transition hover:border-[#4a6c6f] relative group overflow-hidden [&&_.trip-upload-text]:hidden">
+            <div className="flex-shrink-0 w-20 h-20 rounded-lg border border-border bg-muted dark:bg-[#2e2f33] flex items-center justify-center cursor-pointer transition hover:border-[#4a6c6f] relative group overflow-hidden [&&_.trip-upload-text]:hidden">
               {previewUrl ? (
                 <>
                   <img src={previewUrl} alt="Thumbnail" className="w-full h-full object-cover rounded-lg" />
@@ -146,79 +146,76 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
                   onRemoveImage={handleRemoveImage}
                   minimal
                 >
-                  <ImagePlus className="w-8 h-8 text-gray-400 group-hover:text-[#4a6c6f] transition" />
+                  <ImagePlus className="w-8 h-8 text-muted-foreground group-hover:text-[#4a6c6f] transition" />
                 </TripImageUpload>
               )}
             </div>
             <div className="flex-1 flex flex-col justify-center">
-              <Label htmlFor="title" className="mb-2">Activity Title <span className="text-red-500">*</span></Label>
+              <Label htmlFor="title" className="mb-2 text-foreground">Activity Title <span className="text-red-500">*</span></Label>
               <Input 
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Beach Day"
                 required
-                className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+                className="bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-md px-3 py-2"
               />
             </div>
           </div>
           <div className="w-full">
-            {/* Top row: Cost label (left), Category label (right) */}
-            <div className="flex w-full items-start mb-2">
-              <div className="flex-[3_1_0%] min-w-0 flex items-start">
-                <Label className="m-0">Cost</Label>
-              </div>
-              <div className="flex-[2_1_0%] min-w-0 flex items-start pl-4">
-                <Label htmlFor="activity-category" className="m-0">Category</Label>
-              </div>
-            </div>
-            {/* Second row: cost input + toggle (right), separator, category input (right section), perfectly aligned */}
-            <div className="flex w-full items-center gap-2 flex-wrap">
-              {/* Cost input and toggle */}
-              <div className="flex items-center flex-shrink min-w-[220px] max-w-[340px] w-full md:w-auto">
-                <span className="mr-2 text-muted-foreground"><DollarSign className="h-5 w-5" /></span>
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder={costType === 'perPerson' ? 'Per person cost' : 'Total cost'}
-                  value={cost}
-                  onChange={e => setCost(e.target.value)}
-                  required
-                  className="flex-1 min-w-0 bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 text-base"
-                />
-                <div className="flex items-center bg-muted rounded-full px-1 py-1 w-[70px] h-8 border border-border ml-2">
-                  <button
-                    type="button"
-                    aria-label="Per Person"
-                    className={`flex-1 flex items-center justify-center rounded-full transition-colors h-6 w-6 ${costType === 'perPerson' ? 'bg-[#4a6c6f] text-white shadow' : 'text-[#4a6c6f] bg-transparent'}`}
-                    onClick={() => setCostType('perPerson')}
-                  >
-                    <User className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Total"
-                    className={`flex-1 flex items-center justify-center rounded-full transition-colors h-6 w-6 ${costType === 'total' ? 'bg-[#4a6c6f] text-white shadow' : 'text-[#4a6c6f] bg-transparent'}`}
-                    onClick={() => setCostType('total')}
-                  >
-                    <DollarSign className="h-4 w-4" />
-                  </button>
+            {/* Cost and Category fields in responsive grid */}
+            <div className="grid grid-cols-1 md:grid-cols-[2fr_auto_1fr] gap-4 md:gap-2 items-end">
+              {/* Cost field */}
+              <div className="space-y-2">
+                <Label className="block text-foreground">Cost</Label>
+                <div className="flex items-center">
+                  <span className="mr-2 text-muted-foreground"><DollarSign className="h-5 w-5" /></span>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder={costType === 'perPerson' ? 'Per person cost' : 'Total cost'}
+                    value={cost}
+                    onChange={e => setCost(e.target.value)}
+                    required
+                    className="flex-1 min-w-0 bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-md px-3 py-2 text-base"
+                  />
+                  <div className="flex items-center bg-muted dark:bg-[#2e2f33] rounded-full px-1 py-1 w-[70px] h-8 border border-border ml-2">
+                    <button
+                      type="button"
+                      aria-label="Per Person"
+                      className={`flex-1 flex items-center justify-center rounded-full transition-colors h-6 w-6 ${costType === 'perPerson' ? 'bg-[#4a6c6f] text-white shadow' : 'text-[#4a6c6f] bg-transparent'}`}
+                      onClick={() => setCostType('perPerson')}
+                    >
+                      <User className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Total"
+                      className={`flex-1 flex items-center justify-center rounded-full transition-colors h-6 w-6 ${costType === 'total' ? 'bg-[#4a6c6f] text-white shadow' : 'text-[#4a6c6f] bg-transparent'}`}
+                      onClick={() => setCostType('total')}
+                    >
+                      <DollarSign className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
+              
               {/* Vertical Separator */}
-              <div className="hidden md:flex items-stretch mx-2">
-                <div className="w-px bg-border h-10 self-center" />
+              <div className="hidden md:flex items-stretch justify-center">
+                <div className="w-px bg-border h-10" />
               </div>
-              {/* Category input */}
-              <div className="flex flex-col flex-shrink min-w-[180px] max-w-[320px] w-full md:w-auto">
+              
+              {/* Category field */}
+              <div className="space-y-2">
+                <Label htmlFor="activity-category" className="block text-foreground">Category</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="w-full min-w-0 bg-white text-base">
+                  <SelectTrigger id="activity-category" className="w-full bg-muted dark:bg-[#2e2f33] border-border text-foreground text-base">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-muted dark:bg-[#2e2f33] border-border">
                     {CATEGORY_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      <SelectItem key={opt.value} value={opt.value} className="text-foreground hover:bg-[#4a6c6f]">{opt.label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -226,18 +223,18 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="text-foreground">Description</Label>
             <Textarea 
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add details about the activity..."
               rows={4}
-              className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
+              className="bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-md px-3 py-2 resize-y"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="activity-place">Business/Place Name</Label>
+            <Label htmlFor="activity-place" className="text-foreground">Business/Place Name</Label>
             <PlacesAutocomplete
               value={place}
               onChange={setPlace}
@@ -246,10 +243,10 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
             >
               {({ getInputProps, suggestions, getSuggestionItemProps, loading: loadingPlaces }) => (
                 <div className="relative">
-                  <Input {...getInputProps({ id: 'activity-place', placeholder: 'Type a business or place...' })} />
+                  <Input {...getInputProps({ id: 'activity-place', placeholder: 'Type a business or place...' })} className="bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground" />
                   {suggestions.length > 0 && (
-                    <div className="absolute left-0 right-0 bg-white dark:bg-[#23272b] border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg mt-1 z-50 max-h-56 overflow-y-auto">
-                      {loadingPlaces && <div className="p-2 text-sm text-gray-500">Loading...</div>}
+                    <div className="absolute left-0 right-0 bg-muted dark:bg-[#2e2f33] border border-border rounded-lg shadow-lg mt-1 z-50 max-h-56 overflow-y-auto">
+                      {loadingPlaces && <div className="p-2 text-sm text-muted-foreground">Loading...</div>}
                       {suggestions.map((suggestion, index) => {
                         const mainText = suggestion.structured_formatting?.main_text || suggestion.description || '';
                         const secondaryText = suggestion.structured_formatting?.secondary_text || '';
@@ -257,9 +254,9 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
                           <div
                             {...getSuggestionItemProps(suggestion)}
                             key={suggestion.placeId || suggestion.description || index}
-                            className={`p-2 cursor-pointer text-sm transition-colors ${suggestion.active ? 'bg-[#e6f0f1] dark:bg-[#2a323c]' : ''}`}
+                            className={`p-2 cursor-pointer text-sm transition-colors hover:bg-[#4a6c6f] ${suggestion.active ? 'bg-[#4a6c6f]' : ''}`}
                           >
-                            <div className="font-medium text-card-foreground truncate">{mainText}</div>
+                            <div className="font-medium text-foreground truncate">{mainText}</div>
                             {secondaryText && <div className="text-xs text-muted-foreground truncate">{secondaryText}</div>}
                           </div>
                         );
@@ -272,10 +269,10 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
           </div>
         </div>
       </div>
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#23272b] z-20 shadow-[0_-2px_8px_-2px_rgba(0,0,0,0.05)] px-4">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-background dark:bg-[#242529] z-20 shadow-[0_-2px_8px_-2px_rgba(0,0,0,0.05)] px-4">
         <Button 
-          type="submit" 
-          className="bg-[#4a6c6f] hover:bg-[#395457]"
+          type="submit"
+          className="bg-[#4a6c6f] hover:bg-[#395457] text-white font-semibold rounded-md px-6 py-2 transition"
           disabled={isLoading || submitting}
         >
           {isLoading || submitting ? 'Submitting...' : submitButtonText}

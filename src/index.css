@@ -68,3 +68,48 @@
   }
 }
 
+/* Robustly override react-day-picker selected day border and outline to prevent gold corners */
+.rdp-day_selected,
+.rdp-day_selected:focus-visible,
+.rdp-day_selected:hover {
+  border: 2px solid #4a6c6f !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Robustly override react-day-picker accent and outline colors in dark mode */
+.dark .rdp {
+  --rdp-accent-color: #4a6c6f !important;
+  --rdp-outline: 2px solid #4a6c6f !important;
+  --rdp-outline-selected: 2px solid #4a6c6f !important;
+  /* Override Tailwind accent for calendar in dark mode */
+  --accent: 192 20% 36% !important; /* HSL for #4a6c6f */
+  --accent-foreground: 210 40% 98% !important;
+}
+
+.dark .rdp-day_selected,
+.dark .rdp-day_selected:focus-visible,
+.dark .rdp-day_selected:hover {
+  border: 2px solid #4a6c6f !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Dark mode calendar nav arrows (previous/next month) */
+.dark .rdp-nav_button {
+  background-color: #4a6c6f !important;
+  color: #fff !important;
+  border-color: #4a6c6f !important;
+  opacity: 1 !important;
+  transition: background 0.2s;
+}
+.dark .rdp-nav_button:hover {
+  background-color: #395457 !important;
+  color: #fff !important;
+}
+
+/* Ensure nav arrow hover is correct in dark mode */
+.dark .rdp-nav_button:hover {
+  background-color: #395457 !important;
+}
+

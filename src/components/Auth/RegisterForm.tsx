@@ -38,7 +38,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-1.5">
-        <label htmlFor="full-name" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="full-name" className="block text-sm font-medium text-white">
           Full Name
         </label>
         <div className="relative">
@@ -47,14 +47,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
             placeholder="Enter your name"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
-            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
+            className="pl-10 h-11 text-sm rounded-lg border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
             required
           />
           <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         </div>
       </div>
       <div className="space-y-1.5">
-        <label htmlFor="register-email" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="register-email" className="block text-sm font-medium text-white">
           Email
         </label>
         <div className="relative">
@@ -64,14 +64,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
             placeholder="Enter your email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="pl-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
+            className="pl-10 h-11 text-sm rounded-lg border-gray-300 focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f]"
             required
           />
           <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
         </div>
       </div>
       <div className="space-y-1.5">
-        <label htmlFor="register-password" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="register-password" className="block text-sm font-medium text-white">
           Password
         </label>
         <PasswordInput
@@ -82,7 +82,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onGoogleSignIn,
         />
       </div>
       <div className="space-y-1.5">
-        <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="confirm-password" className="block text-sm font-medium text-white">
           Confirm Password
         </label>
         <PasswordInput

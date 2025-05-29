@@ -69,7 +69,7 @@ import {
 import ActivityCard from '@/components/Dashboard/ActivityCard';
 import ParticipantCard from '@/components/Dashboard/ParticipantCard';
 import ExpenseCard from '@/components/Dashboard/ExpenseCard';
-import AddParticipantModal from '@/components/Dashboard/AddParticipantModal';
+import ManageParticipantsModal from '@/components/Dashboard/ManageParticipantsModal';
 import ImageUploadModal from '@/components/Dashboard/ImageUploadModal';
 import StatCardsSection from '@/components/Dashboard/StatCardsSection';
 import { useTripData } from '@/hooks/useTripData';
@@ -115,16 +115,12 @@ const TripDashboard: React.FC = () => {
     handleVote,
     getVoteCount,
     hasUserVoted,
+    getVoterNames,
     isAuthenticated,
     refetch
   } = useTripData(id);
   const { theme, setTheme } = useTheme();
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
-  const [newParticipant, setNewParticipant] = useState({
-    name: '',
-    email: '',
-    status: 'pending'
-  });
   const [isImageUploadOpen, setIsImageUploadOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<any>(null);
   const [imageUrl, setImageUrl] = useState('');
@@ -177,9 +173,8 @@ const TripDashboard: React.FC = () => {
 
   // Add this function to handle adding participants
   const handleAddParticipant = () => {
-    console.log('Adding participant:', newParticipant);
+    // This function is no longer needed as the new modal handles everything internally
     setIsParticipantModalOpen(false);
-    setNewParticipant({ name: '', email: '', status: 'pending' });
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,29 +334,31 @@ const TripDashboard: React.FC = () => {
     <div className="min-h-screen bg-background text-foreground">
       <DashboardHeader />
       <main className="max-w-6xl mx-auto px-4 py-10 animate-fade-in">
-        <div className="flex items-center justify-between mb-10 gap-4 flex-wrap">
-          <div className="min-w-0">
-            <h1 className="text-4xl font-bold mb-1 truncate">{trip?.trip_title || 'Trip'}</h1>
-            <p className="text-lg text-gray-500 truncate">
+        <div className="flex items-start justify-between mb-10 gap-4">
+          <div className="min-w-0 flex-1 pr-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 leading-tight">{trip?.trip_title || 'Trip'}</h1>
+            <p className="text-sm sm:text-base lg:text-lg text-gray-500 leading-relaxed">
               {trip?.start_date ? new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
               {' '}to{' '}
               {trip?.end_date ? new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
               {trip?.destination ? ` · ${trip.destination}` : ''}
             </p>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-          <button className="ml-4 p-2 rounded-full text-gray-400 hover:text-gray-700 transition-colors" title="Trip Settings" aria-label="Trip Settings">
-            <Settings size={24} />
-          </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setIsParticipantModalOpen(true)}>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Manage Participants
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex-shrink-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-2 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors bg-background hover:bg-muted" title="Trip Settings" aria-label="Trip Settings">
+                  <Settings size={20} className="sm:w-6 sm:h-6" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setIsParticipantModalOpen(true)}>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Manage Participants
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -415,7 +412,7 @@ const TripDashboard: React.FC = () => {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold flex items-center">
-                    <ActivityIcon className="mr-2 h-5 w-5 text-orange-500" />
+                    <Calendar className="mr-2 h-5 w-5 text-[#bfae5c]" />
                     Activity Proposals
                   </h2>
                   {activities.length > 0 && (
@@ -427,11 +424,16 @@ const TripDashboard: React.FC = () => {
                 </div>
                 {activities.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <Map className="w-12 h-12 text-[#4a6c6f] mb-4" />
+                    <Calendar className="w-12 h-12 text-[#bfae5c] mb-4" />
                     <h3 className="text-2xl font-semibold mb-2 text-foreground">No activities yet!</h3>
-                    <p className="text-muted-foreground mb-6">Be the first to suggest an activity for this trip.</p>
-                    <Button variant="outline" size="icon" className="rounded-full border-[#4a6c6f] text-[#4a6c6f] hover:bg-[#e6f0f1]" aria-label="Suggest Activity" onClick={openAddActivityModal}>
-                      <Plus className="h-6 w-6" />
+                    <p className="text-muted-foreground mb-8">Be the first to suggest an activity for this trip.</p>
+                    <Button
+                      className="flex items-center gap-2 bg-[#4a6c6f] hover:bg-[#395457] text-white rounded-lg font-semibold px-8 py-3 text-base shadow-none focus:ring-2 focus:ring-[#4a6c6f]/30 focus:outline-none transition"
+                      aria-label="Suggest Activity"
+                      onClick={openAddActivityModal}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Suggest an Activity
                     </Button>
                   </div>
                 ) : (
@@ -455,6 +457,7 @@ const TripDashboard: React.FC = () => {
                         voteCount={getVoteCount(activity.id)}
                         hasVoted={hasUserVoted(activity.id)}
                         isAuthenticated={isAuthenticated}
+                        voters={getVoterNames(activity.id)}
                       />
                     ))}
                   </div>
@@ -462,13 +465,14 @@ const TripDashboard: React.FC = () => {
               </Card>
             </div>
 
-            {/* Add Participant Modal */}
-            <AddParticipantModal
+            {/* Manage Participants Modal */}
+            <ManageParticipantsModal
               open={isParticipantModalOpen}
               onOpenChange={setIsParticipantModalOpen}
-              newParticipant={newParticipant}
-              setNewParticipant={setNewParticipant}
-              onAddParticipant={handleAddParticipant}
+              tripId={id || ''}
+              tripCreatedBy={trip?.created_by || ''}
+              participants={participants}
+              onRefresh={refetch}
             />
 
             {/* Image Upload Modal */}

@@ -15,14 +15,14 @@ interface SuggestActivityDialogProps {
 const SuggestActivityDialog: React.FC<SuggestActivityDialogProps> = ({ isOpen, onOpenChange, onSubmit, confirmedParticipantsCount, loading, initialValues, mode = 'add' }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#23272b] max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px] bg-background dark:bg-[#242529] border border-border max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="pl-4">{mode === 'edit' ? 'Edit Activity' : 'Suggest an Activity'}</DialogTitle>
-          <DialogDescription className="pl-4">
+          <DialogTitle className="pl-4 text-foreground">{mode === 'edit' ? 'Edit Activity' : 'Suggest an Activity'}</DialogTitle>
+          <DialogDescription className="pl-4 text-muted-foreground">
             {mode === 'edit' ? 'Update the details below to edit this activity.' : 'Fill in the details below to propose a new activity for your trip.'}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-1 overflow-y-auto pr-2 bg-white dark:bg-[#23272b] rounded-xl">
+        <div className="flex-1 overflow-y-auto pr-2 bg-background dark:bg-[#242529] rounded-xl">
           <SuggestActivityForm 
             onSubmit={onSubmit} 
             isLoading={!!loading}

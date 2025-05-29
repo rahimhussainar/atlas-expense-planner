@@ -90,8 +90,8 @@ const TripForm: React.FC<TripFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-[#23272b] px-4 rounded-xl">
-      <div className="space-y-6 bg-white dark:bg-[#23272b]">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-[#242529] px-4 rounded-xl">
+      <div className="space-y-6 bg-white dark:bg-[#242529]">
         <div className="space-y-2">
           <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
           <Input 
@@ -100,7 +100,8 @@ const TripForm: React.FC<TripFormProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Summer Vacation 2025"
             required
-            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            variant="trip"
+            className="border-border bg-white dark:bg-[#2e2f33] focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -111,7 +112,8 @@ const TripForm: React.FC<TripFormProps> = ({
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             placeholder="Paris, France"
-            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
+            variant="trip"
+            className="border-border bg-white dark:bg-[#2e2f33] focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
           />
         </div>
         
@@ -130,7 +132,7 @@ const TripForm: React.FC<TripFormProps> = ({
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add details about your trip..."
             rows={4}
-            className="bg-card border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
+            className="bg-white dark:bg-[#2e2f33] border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
           />
         </div>
 
@@ -141,7 +143,7 @@ const TripForm: React.FC<TripFormProps> = ({
         />
       </div>
       
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#23272b]">
+      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#242529]">
         <Button 
           type="submit" 
           className="bg-[#4a6c6f] hover:bg-[#395457]"

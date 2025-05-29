@@ -4,7 +4,7 @@ import { Users, Activity as ActivityIcon, DollarSign, Calendar } from 'lucide-re
 
 const iconMap: Record<string, React.ReactNode> = {
   users: <Users className="text-blue-500" size={22} />,
-  activities: <ActivityIcon className="text-emerald-500" size={22} />,
+  activities: <Calendar className="text-[#4a6c6f]" size={22} />,
   expenses: <DollarSign className="text-atlas-forest" size={22} />,
   countdown: <Calendar className="text-orange-500" size={22} />,
 };

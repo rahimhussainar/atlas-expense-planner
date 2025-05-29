@@ -8,6 +8,7 @@ export function useTripData(id: string | undefined) {
   const [activities, setActivities] = useState<any[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [activityVotes, setActivityVotes] = useState<any[]>([]);
+  const [voterProfiles, setVoterProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -56,6 +57,19 @@ export function useTripData(id: string | undefined) {
         .in('activity_id', activityData?.map(a => a.id) || []);
       if (voteError) throw voteError;
       setActivityVotes(voteData || []);
+
+      // Fetch voter profiles for all users who have voted
+      const voterUserIds = [...new Set((voteData || []).map(vote => vote.user_id))];
+      if (voterUserIds.length > 0) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', voterUserIds);
+        if (profileError) throw profileError;
+        setVoterProfiles(profileData || []);
+      } else {
+        setVoterProfiles([]);
+      }
 
     } catch (err: any) {
       setError(err.message || 'Failed to load trip data');
@@ -108,6 +122,20 @@ export function useTripData(id: string | undefined) {
         
         // Update local state
         setActivityVotes(prev => [...prev, data]);
+        
+        // Add user profile to voter profiles if not already there
+        const userProfile = voterProfiles.find(p => p.id === user.id);
+        if (!userProfile) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .eq('id', user.id)
+            .single();
+          
+          if (profileData) {
+            setVoterProfiles(prev => [...prev, profileData]);
+          }
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Failed to update vote');
@@ -127,6 +155,15 @@ export function useTripData(id: string | undefined) {
     );
   };
 
+  // Get voter names for an activity
+  const getVoterNames = (activityId: string) => {
+    const activityVoters = activityVotes.filter(vote => vote.activity_id === activityId);
+    return activityVoters.map(vote => {
+      const profile = voterProfiles.find(p => p.id === vote.user_id);
+      return profile?.full_name || 'Unknown User';
+    });
+  };
+
   return { 
     trip, 
     participants, 
@@ -137,6 +174,7 @@ export function useTripData(id: string | undefined) {
     handleVote,
     getVoteCount,
     hasUserVoted,
+    getVoterNames,
     isAuthenticated: !!user,
     refetch: fetchData
   };

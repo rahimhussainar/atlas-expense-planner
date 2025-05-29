@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Eye, EyeOff, Lock } from 'lucide-react';
@@ -28,7 +27,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="pl-10 pr-10 h-11 text-sm rounded-lg bg-white border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest"
+        className="pl-10 pr-10 h-11 text-sm rounded-lg border-gray-300 focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest"
         required={required}
       />
       <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />

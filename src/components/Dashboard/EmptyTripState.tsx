@@ -11,7 +11,6 @@ const EmptyTripState = ({ message, description }: { message: string, description
     <div className="text-4xl text-muted-foreground mb-2">+</div>
     <div className="text-lg font-semibold text-card-foreground mb-1">{message}</div>
     <div className="text-muted-foreground mb-2">{description}</div>
-    <div className="text-muted-foreground text-sm">Start planning your next adventure!</div>
   </div>
 );
 
