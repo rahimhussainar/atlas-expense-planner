@@ -1,8 +1,8 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import CreateTripForm from './CreateTripForm';
+import { ResponsiveModal } from '@/components/shared/ResponsiveModal';
 
 interface NewTripDialogProps {
   isOpen: boolean;
@@ -12,24 +12,26 @@ interface NewTripDialogProps {
 
 const NewTripDialog: React.FC<NewTripDialogProps> = ({ isOpen, onOpenChange, onTripCreated }) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-atlas-forest hover:bg-atlas-forest/90">
-          <Plus className="mr-2 h-4 w-4" /> New Trip
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-white dark:bg-[#242529] max-h-[90vh] flex flex-col mt-4 sm:mt-0 mb-4 sm:mb-0">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="pl-4">Create New Trip</DialogTitle>
-          <DialogDescription className="pl-4">
-            Fill in the details below to create a new trip. You can add more details later.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex-1 overflow-y-auto bg-white dark:bg-[#242529] rounded-xl">
-          <CreateTripForm onSuccess={onTripCreated} />
-        </div>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Button 
+        className="bg-[#4a6c6f] hover:bg-[#395457] text-white"
+        onClick={() => onOpenChange(true)}
+      >
+        <Plus className="mr-2 h-4 w-4" /> New Trip
+      </Button>
+      
+      <ResponsiveModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        title="Create New Trip"
+        description="Fill in the details below to create a new trip. You can add more details later."
+      >
+        <CreateTripForm onSuccess={() => {
+          onTripCreated();
+          onOpenChange(false);
+        }} />
+      </ResponsiveModal>
+    </>
   );
 };
 

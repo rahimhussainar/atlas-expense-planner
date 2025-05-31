@@ -1,62 +1,88 @@
 import React from 'react';
-import { MapPin, Calendar, Users, CreditCard } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="w-full pt-8 md:pt-12 pb-12 md:py-16 px-4 md:px-6 lg:px-12 flex flex-col md:flex-row items-center bg-background">
-      {/* Left side - Content */}
-      <div className="w-full md:w-1/2 mb-8 md:mb-0 md:pr-8">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-4 md:mb-6 text-foreground">
-          Effortlessly track group trips & expenses
-        </h1>
-        <p className="text-base md:text-lg text-muted-foreground mb-6 md:mb-8 leading-relaxed">
-          Plan trips, split costs evenly, and settle expenses with Trip Atlas. Perfect for traveling with friends, family, or colleagues.
-        </p>
+    <section className="relative w-full min-h-screen flex items-center justify-center">
+      {/* Professional animated background with green accents */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute w-full h-full">
+          <div className="absolute top-0 -left-[10%] w-[500px] h-[500px] bg-[#4a6c6f]/5 dark:bg-[#4a6c6f]/10 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute -top-[20%] right-0 w-[600px] h-[600px] bg-[#4a6c6f]/3 dark:bg-[#4a6c6f]/5 rounded-full blur-[120px] animate-pulse delay-700" />
+          <div className="absolute -bottom-[20%] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-[#4a6c6f]/5 dark:bg-[#4a6c6f]/10 rounded-full blur-[120px] animate-pulse delay-1500" />
+        </div>
       </div>
-      
-      {/* Right side - Illustration */}
-      <div className="w-full md:w-1/2 flex justify-center">
-        <div className="relative w-full max-w-md">
-          <div className="absolute -top-4 md:-top-6 -left-4 md:-left-6 animate-float delay-100">
-            <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <MapPin className="text-atlas-rust h-4 w-4" />
-              <span className="font-medium text-sm md:text-base text-card-foreground">Trip to Barcelona</span>
-            </div>
+
+      <div className="relative z-10 w-full px-4 md:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="text-center space-y-10">
+          {/* Refined badge with subtle green accent */}
+          <div className="inline-flex items-center gap-2 px-6 py-2.5 bg-gray-100 dark:bg-white/5 backdrop-blur-sm rounded-full border border-gray-200 dark:border-white/10 shadow-sm">
+            <Sparkles className="w-4 h-4 text-[#4a6c6f] dark:text-white/80" />
+            <span className="text-sm font-medium text-gray-700 dark:text-white/80">Welcome to Trip Atlas</span>
           </div>
           
-          <div className="absolute top-16 md:top-20 -right-2 md:-right-4 animate-float delay-300">
-            <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <Calendar className="text-[#4a6c6f] h-4 w-4" />
-              <span className="font-medium text-sm md:text-base text-card-foreground">June 10-16</span>
-            </div>
+          {/* Main heading */}
+          <div className="space-y-8">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+              <span className="text-gray-900 dark:text-white">Plan Group Trips.</span>
+              <br />
+              <span className="bg-gradient-to-r from-[#4a6c6f] to-[#6a9c7f] dark:from-[#6a9c7f] dark:to-white bg-clip-text text-transparent animate-gradient bg-300% bg-gradient-x">
+                Split Expenses Effortlessly.
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              The intelligent way to organize trips with friends and family. 
+              Track expenses, vote on activities, and settle up—all in one place.
+            </p>
           </div>
-          
-          <div className="absolute bottom-16 md:bottom-20 -left-6 md:-left-8 animate-float delay-500">
-            <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <Users className="text-[#4a6c6f] h-4 w-4" />
-              <span className="font-medium text-sm md:text-base text-card-foreground">4 travelers</span>
-            </div>
+
+          {/* Enhanced CTA buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
+            <Button 
+              onClick={() => navigate('/auth')}
+              size="lg"
+              className="min-w-[220px] h-14 bg-[#4a6c6f] hover:bg-[#3a5c5f] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 group text-base font-semibold"
+            >
+              Get Started Free
+              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <Button 
+              variant="outline" 
+              size="lg"
+              className="min-w-[220px] h-14 text-gray-700 dark:text-white border-gray-300 dark:border-white/20 hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 text-base font-medium"
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              See How It Works
+            </Button>
           </div>
-          
-          <div className="absolute -bottom-4 md:-bottom-6 -right-1 md:-right-2 animate-float delay-700">
-            <div className="bg-card p-3 md:p-4 rounded-lg shadow-lg flex items-center gap-2 md:gap-3 border border-border">
-              <CreditCard className="text-atlas-slate h-4 w-4" />
-              <span className="font-medium text-sm md:text-base text-card-foreground">$240 per person</span>
-            </div>
-          </div>
-          
-          <div className="bg-atlas-rust/20 border-4 border-atlas-rust h-64 w-64 md:h-80 md:w-80 rounded-full flex items-center justify-center">
-            <div className="bg-background h-3/5 w-3/5 rounded-full shadow-lg flex items-center justify-center">
-              <div className="bg-[#4a6c6f]/30 h-2/3 w-2/3 rounded-full flex items-center justify-center">
-                <div className="bg-[#4a6c6f] h-1/2 w-1/2 rounded-full flex items-center justify-center">
-                  <div className="bg-atlas-slate h-2/3 w-2/3 rounded-full"></div>
-                </div>
-              </div>
+
+          {/* Enhanced trust indicator */}
+          <div className="pt-16">
+            <p className="text-sm text-gray-600 dark:text-gray-500 mb-4">
+              Trusted by over <span className="text-[#4a6c6f] dark:text-white font-semibold">1,000+ travelers</span> worldwide
+            </p>
+            {/* Social proof dots */}
+            <div className="flex justify-center items-center gap-1">
+              {[...Array(20)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className="w-2 h-2 rounded-full bg-[#4a6c6f]/20 dark:bg-white/20" 
+                  style={{ animationDelay: `${i * 100}ms` }}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Enhanced gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-gray-50 dark:from-[#1a1b1f] via-gray-50/50 dark:via-[#1a1b1f]/50 to-transparent" />
+    </section>
   );
 };
 

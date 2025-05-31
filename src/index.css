@@ -68,6 +68,28 @@
   }
 }
 
+/* Gradient text animation */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient {
+  animation: gradient-x 6s ease infinite;
+}
+
+.bg-300\% {
+  background-size: 300%;
+}
+
+.bg-gradient-x {
+  background-size: 300% 100%;
+}
+
 /* Robustly override react-day-picker selected day border and outline to prevent gold corners */
 .rdp-day_selected,
 .rdp-day_selected:focus-visible,
@@ -111,5 +133,87 @@
 /* Ensure nav arrow hover is correct in dark mode */
 .dark .rdp-nav_button:hover {
   background-color: #395457 !important;
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.dark .bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Animation delays for Tailwind */
+.delay-0 { animation-delay: 0ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+.delay-1500 { animation-delay: 1500ms; }
+.delay-2000 { animation-delay: 2000ms; }
+
+/* Safari-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix for Safari modal height calculation */
+  [style*="height: calc"] {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+  
+  /* Prevent Safari from hiding content behind toolbar */
+  body {
+    /* Use dvh (dynamic viewport height) for better Safari support */
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Better transform performance on Safari */
+  .transition-transform {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Fix for modal backdrop and z-index issues on Safari */
+  .fixed {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  
+  /* Prevent body scroll when modal is open */
+  body[style*="position: fixed"] {
+    -webkit-overflow-scrolling: auto;
+  }
+}
+
+/* iOS-specific adjustments */
+@media screen and (max-width: 768px) {
+  /* Ensure modals don't get cut off on iOS */
+  .fixed {
+    max-height: 100vh;
+    max-height: 100dvh;
+  }
+  
+  /* Prevent double scroll on mobile */
+  body[style*="overflow: hidden"] {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden !important;
+  }
+}
+
+/* Mobile modal improvements */
+@media (max-width: 768px) {
+  .modal-drawer {
+    touch-action: none;
+  }
 }
 

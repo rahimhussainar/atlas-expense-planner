@@ -1,58 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Trip } from '@/types/trip';
 import TripCard from './TripCard';
-import DeleteTripDialog from './DeleteTripDialog';
-import EditTripDialog from './EditTripDialog';
-import { useTripActions } from '@/hooks/useTripActions';
 
 interface TripsListProps {
   trips: Trip[];
   onTripDeleted?: () => void;
   onTripUpdated?: () => void;
+  onEditTrip?: (trip: Trip) => void;
+  onDeleteTrip?: (trip: Trip) => void;
 }
 
-const TripsList: React.FC<TripsListProps> = ({ trips, onTripDeleted, onTripUpdated }) => {
-  const [tripToEdit, setTripToEdit] = useState<Trip | null>(null);
-  const { tripToDelete, setTripToDelete, isDeleting, handleDeleteTrip } = useTripActions(onTripDeleted);
-
-  const handleEdit = (trip: Trip) => {
-    setTripToEdit(trip);
-  };
-
-  const handleUpdateSuccess = () => {
-    setTripToEdit(null);
-    onTripUpdated?.();
-  };
-  
+const TripsList: React.FC<TripsListProps> = React.memo(({ 
+  trips, 
+  onEditTrip = () => {}, 
+  onDeleteTrip = () => {} 
+}) => {
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trips.map((trip) => (
-          <TripCard 
-            key={trip.id} 
-            trip={trip} 
-            onEditTrip={handleEdit} 
-            onDeleteTrip={setTripToDelete} 
-          />
-        ))}
-      </div>
-
-      {/* Delete Trip Dialog */}
-      <DeleteTripDialog
-        trip={tripToDelete}
-        isDeleting={isDeleting}
-        onCancel={() => setTripToDelete(null)}
-        onConfirmDelete={handleDeleteTrip}
-      />
-
-      {/* Edit Trip Dialog */}
-      <EditTripDialog
-        trip={tripToEdit}
-        onClose={() => setTripToEdit(null)}
-        onSuccess={handleUpdateSuccess}
-      />
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {trips.map((trip) => (
+        <TripCard 
+          key={trip.id} 
+          trip={trip} 
+          onEditTrip={onEditTrip} 
+          onDeleteTrip={onDeleteTrip} 
+        />
+      ))}
+    </div>
   );
-};
+});
+
+TripsList.displayName = 'TripsList';
 
 export default TripsList;

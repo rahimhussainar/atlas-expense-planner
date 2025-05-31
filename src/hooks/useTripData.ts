@@ -63,7 +63,7 @@ export function useTripData(id: string | undefined) {
       if (voterUserIds.length > 0) {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('id, full_name')
+          .select('id, full_name, avatar_url')
           .in('id', voterUserIds);
         if (profileError) throw profileError;
         setVoterProfiles(profileData || []);
@@ -128,7 +128,7 @@ export function useTripData(id: string | undefined) {
         if (!userProfile) {
           const { data: profileData } = await supabase
             .from('profiles')
-            .select('id, full_name')
+            .select('id, full_name, avatar_url')
             .eq('id', user.id)
             .single();
           
@@ -175,6 +175,7 @@ export function useTripData(id: string | undefined) {
     getVoteCount,
     hasUserVoted,
     getVoterNames,
+    voterProfiles,
     isAuthenticated: !!user,
     refetch: fetchData
   };

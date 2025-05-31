@@ -1,15 +1,30 @@
+import { BaseItem, ItemWithCost } from './shared';
 
-export interface TripExpense {
-  id: string;
+export interface TripExpense extends BaseItem, ItemWithCost {
   trip_id: string;
   title: string;
-  amount: number;
-  currency: string;
-  category: 'accommodation' | 'transportation' | 'food' | 'activity' | 'other';
-  paid_by: string | null;
   description: string | null;
-  expense_date: string | null;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
+  category: ExpenseCategory;
+  paid_by: string;
+  paid_by_name?: string;
+  date: string;
+  receipt_url?: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  split_type: 'equal' | 'custom' | 'by_participant';
+  participants?: string[]; // IDs of participants involved in this expense
+}
+
+export type ExpenseCategory = 
+  | 'accommodation' 
+  | 'food' 
+  | 'transport' 
+  | 'activities' 
+  | 'shopping' 
+  | 'other';
+
+export interface ExpenseSplit {
+  expense_id: string;
+  participant_id: string;
+  amount: number;
+  is_paid: boolean;
 }

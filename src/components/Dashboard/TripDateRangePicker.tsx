@@ -25,50 +25,60 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
   onEndDateChange
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <Label>Start Date</Label>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="space-y-1">
+        <Label className="text-xs text-muted-foreground">Start Date</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
               className={cn(
-                "w-full justify-start text-left font-normal bg-card hover:bg-atlas-forest focus:bg-atlas-forest hover:text-primary-foreground focus:text-primary-foreground",
+                "w-full justify-start text-left font-normal bg-muted dark:bg-[#2e2f33] border-border hover:bg-muted/80",
                 !startDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? format(startDate, "PPP") : "Select date"}
+              {startDate ? format(startDate, "MMM d, yyyy") : "Select date"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-card">
+          <PopoverContent 
+            className="w-auto p-0 bg-background dark:bg-[#2e2f33] z-[110]" 
+            align="start"
+            side="bottom"
+            sideOffset={4}
+          >
             <Calendar
               mode="single"
               selected={startDate}
               onSelect={onStartDateChange}
               initialFocus
-              className="p-3 pointer-events-auto"
+              className="p-3"
             />
           </PopoverContent>
         </Popover>
       </div>
       
-      <div className="space-y-2">
-        <Label>End Date</Label>
+      <div className="space-y-1">
+        <Label className="text-xs text-muted-foreground">End Date</Label>
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
               className={cn(
-                "w-full justify-start text-left font-normal bg-card hover:bg-atlas-forest focus:bg-atlas-forest hover:text-primary-foreground focus:text-primary-foreground",
+                "w-full justify-start text-left font-normal bg-muted dark:bg-[#2e2f33] border-border hover:bg-muted/80",
                 !endDate && "text-muted-foreground"
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {endDate ? format(endDate, "PPP") : "Select date"}
+              {endDate ? format(endDate, "MMM d, yyyy") : "Select date"}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-card">
+          <PopoverContent 
+            className="w-auto p-0 bg-background dark:bg-[#2e2f33] z-[110]" 
+            align="start"
+            side="bottom"
+            sideOffset={4}
+          >
             <Calendar
               mode="single"
               selected={endDate}
@@ -77,7 +87,7 @@ const TripDateRangePicker: React.FC<TripDateRangePickerProps> = ({
               disabled={date => 
                 startDate ? date < startDate : false
               }
-              className="p-3 pointer-events-auto"
+              className="p-3"
             />
           </PopoverContent>
         </Popover>

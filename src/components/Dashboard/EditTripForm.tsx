@@ -2,14 +2,8 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Trip } from '@/types/trip';
-import TripImageUpload from './TripImageUpload';
-import TripDateRangePicker from './TripDateRangePicker';
-import { useImageUpload } from '@/hooks/useImageUpload';
+import TripForm from './TripForm';
 
 interface EditTripFormProps {
   trip: Trip;
@@ -20,60 +14,20 @@ interface EditTripFormProps {
 const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  const [title, setTitle] = useState(trip.title);
-  const [destination, setDestination] = useState(trip.destination || '');
-  const [description, setDescription] = useState(trip.description || '');
-  const [startDate, setStartDate] = useState<Date | undefined>(
-    trip.start_date ? new Date(trip.start_date) : undefined
-  );
-  const [endDate, setEndDate] = useState<Date | undefined>(
-    trip.end_date ? new Date(trip.end_date) : undefined
-  );
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    previewUrl,
-    handleImageChange,
-    removeImage,
-    uploadImage
-  } = useImageUpload(trip.cover_image);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) {
-      toast({
-        title: 'Required Field Missing',
-        description: 'Please provide a trip title.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    if (startDate && endDate && startDate > endDate) {
-      toast({
-        title: 'Invalid Dates',
-        description: 'End date cannot be before start date.',
-        variant: 'destructive',
-      });
-      return;
-    }
+  const handleSubmit = async (formData: any) => {
     setIsLoading(true);
     try {
-      let coverImageUrl = previewUrl;
-      
-      if (user) {
-        coverImageUrl = await uploadImage(user.id);
-      }
-
       const { error } = await supabase
         .from('trips')
         .update({
-          trip_title: title,
-          destination: destination || null,
-          description: description || null,
-          start_date: startDate?.toISOString() || null,
-          end_date: endDate?.toISOString() || null,
-          cover_image: coverImageUrl,
+          trip_title: formData.title,
+          destination: formData.destination || null,
+          description: formData.description || null,
+          start_date: formData.startDate?.toISOString() || null,
+          end_date: formData.endDate?.toISOString() || null,
+          cover_image: formData.coverImageUrl || trip.cover_image,
           updated_at: new Date().toISOString(),
         })
         .eq('id', trip.id);
@@ -97,77 +51,19 @@ const EditTripForm: React.FC<EditTripFormProps> = ({ trip, onSuccess, onCancel }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-[#242529] px-4 rounded-xl">
-      <div className="space-y-6 bg-white dark:bg-[#242529]">
-        <div className="space-y-2">
-          <Label htmlFor="title">Trip Title <span className="text-red-500">*</span></Label>
-          <Input 
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Summer Vacation 2025"
-            required
-            variant="trip"
-            className="border-border bg-white dark:bg-[#2e2f33] focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="destination">Destination</Label>
-          <Input 
-            id="destination"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Paris, France"
-            variant="trip"
-            className="border-border bg-white dark:bg-[#2e2f33] focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2"
-          />
-        </div>
-        
-        <TripDateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-        />
-        
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea 
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Add details about your trip..."
-            rows={4}
-            className="bg-white dark:bg-[#2e2f33] border-border focus:border-atlas-forest focus:ring-1 focus:ring-atlas-forest rounded-md px-3 py-2 resize-y"
-          />
-        </div>
-
-        <TripImageUpload
-          previewUrl={previewUrl}
-          onImageChange={handleImageChange}
-          onRemoveImage={removeImage}
-        />
-      </div>
-      
-      <div className="flex justify-end space-x-3 pt-4 sticky bottom-0 bg-white dark:bg-[#242529] z-10">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Cancel
-        </Button>
-        <Button 
-          type="submit" 
-          className="bg-[#4a6c6f] hover:bg-[#395457]"
-          disabled={isLoading}
-        >
-          {isLoading ? 'Saving...' : 'Save Changes'}
-        </Button>
-      </div>
-    </form>
+    <TripForm
+      initialValues={{
+        title: trip.title,
+        destination: trip.destination || '',
+        description: trip.description || '',
+        startDate: trip.start_date ? new Date(trip.start_date) : undefined,
+        endDate: trip.end_date ? new Date(trip.end_date) : undefined,
+        coverImageUrl: trip.cover_image,
+      }}
+      onSubmit={handleSubmit}
+      isLoading={isLoading}
+      submitButtonText="Save Changes"
+    />
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +28,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ResponsiveModal } from '@/components/shared/ResponsiveModal';
 
 interface Participant {
   id: string;
@@ -416,15 +416,12 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[85vh] bg-[#242529]">
-        <DialogHeader>
-          <DialogTitle className="text-white flex items-center">
-            <UserPlus className="mr-2 h-5 w-5" />
-            Manage Participants
-          </DialogTitle>
-        </DialogHeader>
-
+    <ResponsiveModal
+      isOpen={open}
+      onOpenChange={onOpenChange}
+      title="Manage Participants"
+      maxWidth="max-w-4xl"
+    >
         <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2">
           {/* Invitation Method Selector */}
           <div className="space-y-4">
@@ -688,8 +685,7 @@ const ManageParticipantsModal: React.FC<ManageParticipantsModalProps> = ({
             )}
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+    </ResponsiveModal>
   );
 };
 

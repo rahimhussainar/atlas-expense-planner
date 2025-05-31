@@ -1,14 +1,11 @@
-export interface TripActivity {
-  id: string;
+import { BaseItem, ItemWithImage, ItemWithCost, ItemWithLocation } from './shared';
+
+export interface TripActivity extends BaseItem, ItemWithImage, ItemWithCost, ItemWithLocation {
   trip_id: string;
   title: string;
   description: string | null;
-  location: string | null;
   date: string | null;
-  created_by: string;
   status: 'suggested' | 'confirmed' | 'cancelled';
-  created_at: string;
-  updated_at: string;
   category?: string;
 }
 

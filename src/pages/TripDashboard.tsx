@@ -77,6 +77,11 @@ import { useCountdown } from '@/hooks/useCountdown';
 import { useStatCards } from '@/hooks/useStatCards';
 import SuggestActivityDialog from '@/components/Dashboard/SuggestActivityDialog';
 import { useToast } from '@/components/ui/use-toast';
+import { uploadActivityImage, deleteActivityImage } from '@/utils/supabase-storage';
+import { DeleteConfirmationDialog } from '@/components/shared/DeleteConfirmationDialog';
+import { EmptyStateCard } from '@/components/shared/EmptyStateCard';
+import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { TripActivity } from '@/types/activity';
 
 
 // Helpers/constants outside the main component
@@ -116,6 +121,7 @@ const TripDashboard: React.FC = () => {
     getVoteCount,
     hasUserVoted,
     getVoterNames,
+    voterProfiles,
     isAuthenticated,
     refetch
   } = useTripData(id);
@@ -203,18 +209,16 @@ const TripDashboard: React.FC = () => {
     }
   };
 
-  const [isSuggestActivityOpen, setIsSuggestActivityOpen] = useState(false);
-  const [suggestActivityMode, setSuggestActivityMode] = useState<'add' | 'edit'>('add');
-  const [activityToEdit, setActivityToEdit] = useState<any>(null);
   const { toast } = useToast();
-  const [activityToDelete, setActivityToDelete] = useState<any>(null);
-  const [isDeletingActivity, setIsDeletingActivity] = useState(false);
+  
+  // Use the CRUD operations hook for activities
+  const activityCrud = useCrudOperations<TripActivity>({ onRefresh: refetch });
 
   // Handler to submit a new or edited activity
   const handleSuggestActivity = async (activity: any) => {
     if (!id) return;
     const { id: activityId, title, description, business, place, category, costType, cost, thumbnail } = activity;
-    const { name, address, rating, website } = business || {};
+    const { name, address, rating, website, totalRatings } = business || {};
 
     // Get the current user
     const { data: userData } = await supabase.auth.getUser();
@@ -243,17 +247,12 @@ const TripDashboard: React.FC = () => {
     // --- IMAGE UPLOAD LOGIC ---
     let imageUrl = null;
     if (thumbnail && userId) {
-      const fileExt = thumbnail.name.split('.').pop();
-      const fileName = `${userId}/${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from('activity-images')
-        .upload(fileName, thumbnail);
-      if (!uploadError) {
-        const { data: publicUrlData } = supabase.storage
-          .from('activity-images')
-          .getPublicUrl(fileName);
-        imageUrl = publicUrlData.publicUrl;
-      }
+      // Upload new image and delete old one if editing
+      imageUrl = await uploadActivityImage(
+        thumbnail, 
+        userId, 
+        activityCrud.itemToEdit?.image
+      );
     }
 
     const payload = {
@@ -267,12 +266,13 @@ const TripDashboard: React.FC = () => {
       business_address: address || null,
       business_rating: rating || null,
       business_website: website || null,
+      business_total_ratings: totalRatings || null,
       category: category || 'fun',
       created_by_name: userName,
       price_type: costType === 'perPerson' ? 'per_person' : 'total',
       price: typeof price === 'number' && !isNaN(price) ? price : null,
       total_price: typeof totalPrice === 'number' && !isNaN(totalPrice) ? totalPrice : null,
-      image: imageUrl || (activity.image || null),
+      image: imageUrl || (activityCrud.itemToEdit?.image || null),
     };
 
     if (activityId) {
@@ -282,62 +282,41 @@ const TripDashboard: React.FC = () => {
       // Add mode: insert new activity
       await supabase.from('trip_activities').insert(payload);
     }
-    setIsSuggestActivityOpen(false);
-    setActivityToEdit(null);
-    setSuggestActivityMode('add');
+    activityCrud.closeForm();
     refetch();
   };
 
-  // Handler to open add modal
-  const openAddActivityModal = () => {
-    setActivityToEdit(null);
-    setSuggestActivityMode('add');
-    setIsSuggestActivityOpen(true);
-  };
-
-  // Handler to open edit modal
-  const openEditActivityModal = (activity: any) => {
-    setActivityToEdit(activity);
-    setSuggestActivityMode('edit');
-    setIsSuggestActivityOpen(true);
-  };
-
   // Delete activity handler
-  const handleDeleteActivity = async (activity: any) => {
-    setActivityToDelete(activity);
-  };
-
-  const confirmDeleteActivity = async () => {
-    if (!activityToDelete) return;
-    setIsDeletingActivity(true);
-    try {
+  const handleDeleteActivity = async (activity: TripActivity) => {
+    // Delete the activity image from storage first
+    if (activity.image) {
+      await deleteActivityImage(activity.image);
+    }
+    
       const { error } = await supabase
         .from('trip_activities')
         .delete()
-        .eq('id', activityToDelete.id);
+      .eq('id', activity.id);
+    
       if (error) throw error;
-      toast({ title: 'Activity Deleted', description: 'The activity has been deleted.' });
-      setActivityToDelete(null);
-      refetch();
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message || 'Failed to delete activity.', variant: 'destructive' });
-    } finally {
-      setIsDeletingActivity(false);
-    }
-  };
-
-  const cancelDeleteActivity = () => {
-    setActivityToDelete(null);
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground relative">
+      {/* Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50/30 via-transparent to-gray-100/30 dark:from-gray-900/50 dark:via-transparent dark:to-gray-800/30" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#4a6c6f]/5 dark:bg-[#4a6c6f]/3 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-40 w-96 h-96 bg-gray-300/20 dark:bg-gray-700/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#4a6c6f]/5 dark:bg-[#4a6c6f]/3 rounded-full blur-3xl" />
+      </div>
+      
       <DashboardHeader />
-      <main className="max-w-6xl mx-auto px-4 py-10 animate-fade-in">
+      <main className="relative max-w-6xl mx-auto px-4 py-10 animate-fade-in">
         <div className="flex items-start justify-between mb-10 gap-4">
           <div className="min-w-0 flex-1 pr-2">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 leading-tight">{trip?.trip_title || 'Trip'}</h1>
-            <p className="text-sm sm:text-base lg:text-lg text-gray-500 leading-relaxed">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed">
               {trip?.start_date ? new Date(trip.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
               {' '}to{' '}
               {trip?.end_date ? new Date(trip.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
@@ -347,7 +326,7 @@ const TripDashboard: React.FC = () => {
           <div className="flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors bg-background hover:bg-muted" title="Trip Settings" aria-label="Trip Settings">
+                <button className="p-2 rounded-full text-muted-foreground hover:text-foreground transition-colors bg-background hover:bg-muted border border-border" title="Trip Settings" aria-label="Trip Settings">
                   <Settings size={20} className="sm:w-6 sm:h-6" />
                 </button>
               </DropdownMenuTrigger>
@@ -362,7 +341,7 @@ const TripDashboard: React.FC = () => {
         </div>
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-atlas-forest" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4a6c6f]" />
           </div>
         ) : error ? (
           <div className="text-center text-red-500 py-8">{error}</div>
@@ -371,13 +350,17 @@ const TripDashboard: React.FC = () => {
             <StatCardsSection statCards={statCards} />
             <div className="space-y-8">
               {/* Participants Section - New Design */}
-              <Card className="p-6">
+              <Card className="relative overflow-hidden border-border shadow-lg bg-card/80 dark:bg-[#272829] backdrop-blur-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold flex items-center">
                     <Users className="mr-2 h-5 w-5 text-blue-500" />
                     Trip Squad
                   </h2>
-                  <Button variant="ghost" size="sm" onClick={() => setIsParticipantModalOpen(true)}>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setIsParticipantModalOpen(true)}
+                  >
                     <Plus className="h-4 w-4 mr-1" />
                     Invite
                   </Button>
@@ -390,13 +373,16 @@ const TripDashboard: React.FC = () => {
               </Card>
 
               {/* Expenses Section - Card Stack Style */}
-              <Card className="p-6">
+              <Card className="relative overflow-hidden border-border shadow-lg bg-card/80 dark:bg-[#252627] backdrop-blur-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold flex items-center">
                     <Receipt className="mr-2 h-5 w-5 text-emerald-500" />
                     Expense Tracker
                   </h2>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                  >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Expense
                   </Button>
@@ -409,33 +395,32 @@ const TripDashboard: React.FC = () => {
               </Card>
 
               {/* Activities Section - Proposal Board Style */}
-              <Card className="p-6">
+              <Card className="relative overflow-hidden border-border shadow-lg bg-card/80 dark:bg-[#242529] backdrop-blur-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold flex items-center">
                     <Calendar className="mr-2 h-5 w-5 text-[#bfae5c]" />
                     Activity Proposals
                   </h2>
                   {activities.length > 0 && (
-                    <Button variant="ghost" size="sm" onClick={openAddActivityModal}>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={activityCrud.openAddForm}
+                      className="hover:bg-[#4a6c6f] hover:text-white transition-all"
+                    >
                       <Plus className="h-4 w-4 mr-1" />
                       Add Activity
                     </Button>
                   )}
                 </div>
                 {activities.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <Calendar className="w-12 h-12 text-[#bfae5c] mb-4" />
-                    <h3 className="text-2xl font-semibold mb-2 text-foreground">No activities yet!</h3>
-                    <p className="text-muted-foreground mb-8">Be the first to suggest an activity for this trip.</p>
-                    <Button
-                      className="flex items-center gap-2 bg-[#4a6c6f] hover:bg-[#395457] text-white rounded-lg font-semibold px-8 py-3 text-base shadow-none focus:ring-2 focus:ring-[#4a6c6f]/30 focus:outline-none transition"
-                      aria-label="Suggest Activity"
-                      onClick={openAddActivityModal}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Suggest an Activity
-                    </Button>
-                  </div>
+                  <EmptyStateCard
+                    icon={<Calendar className="w-12 h-12 text-[#bfae5c]" />}
+                    title="No activities yet!"
+                    description="Be the first to suggest an activity for this trip."
+                    actionLabel="Suggest an Activity"
+                    onAction={activityCrud.openAddForm}
+                  />
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {activities.map((activity) => (
@@ -451,13 +436,14 @@ const TripDashboard: React.FC = () => {
                           );
                         }}
                         onImageUpload={handleImageUpload}
-                        onEdit={() => openEditActivityModal(activity)}
-                        onDelete={() => handleDeleteActivity(activity)}
+                        onEdit={() => activityCrud.openEditForm(activity)}
+                        onDelete={() => activityCrud.handleDelete(activity)}
                         onVote={handleVote}
                         voteCount={getVoteCount(activity.id)}
                         hasVoted={hasUserVoted(activity.id)}
                         isAuthenticated={isAuthenticated}
                         voters={getVoterNames(activity.id)}
+                        voterProfiles={voterProfiles}
                       />
                     ))}
                   </div>
@@ -489,29 +475,24 @@ const TripDashboard: React.FC = () => {
             />
 
             <SuggestActivityDialog
-              isOpen={isSuggestActivityOpen}
-              onOpenChange={setIsSuggestActivityOpen}
+              isOpen={activityCrud.isFormOpen}
+              onOpenChange={activityCrud.setIsFormOpen}
               onSubmit={handleSuggestActivity}
               confirmedParticipantsCount={confirmedParticipants.length}
               loading={false}
-              initialValues={activityToEdit}
-              mode={suggestActivityMode}
+              initialValues={activityCrud.itemToEdit}
+              mode={activityCrud.formMode}
             />
 
-            {activityToDelete && (
-              <Dialog open={!!activityToDelete} onOpenChange={cancelDeleteActivity}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Delete Activity</DialogTitle>
-                    <DialogDescription>Are you sure you want to delete this activity? This action cannot be undone.</DialogDescription>
-                  </DialogHeader>
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="outline" onClick={cancelDeleteActivity} disabled={isDeletingActivity}>Cancel</Button>
-                    <Button variant="destructive" onClick={confirmDeleteActivity} disabled={isDeletingActivity}>{isDeletingActivity ? 'Deleting...' : 'Delete'}</Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            )}
+            <DeleteConfirmationDialog
+              isOpen={!!activityCrud.itemToDelete}
+              onOpenChange={(open) => !open && activityCrud.cancelDelete()}
+              onConfirm={() => activityCrud.confirmDelete(handleDeleteActivity, 'Activity deleted successfully')}
+              onCancel={activityCrud.cancelDelete}
+              title="Delete Activity"
+              description="Are you sure you want to delete this activity? This action cannot be undone."
+              isDeleting={activityCrud.isDeleting}
+            />
           </>
       )}
       </main>

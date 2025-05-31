@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, MapPin, Pencil, Trash2, ChevronDown, Users, DollarSign } from 'lucide-react';
+import { Calendar, MapPin, Pencil, Trash2, ChevronDown, ChevronUp, Users, DollarSign, Trash, Image as ImageIcon, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { Trip } from '@/types/trip';
 import { useAuth } from '@/contexts/AuthContext';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
+import { ItemCardActions } from '@/components/shared/ItemCardActions';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface TripCardProps {
   trip: Trip;
@@ -14,10 +16,8 @@ interface TripCardProps {
   onDeleteTrip: (trip: Trip) => void;
 }
 
-const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) => {
+const TripCard: React.FC<TripCardProps> = React.memo(({ trip, onEditTrip, onDeleteTrip }) => {
   const [expanded, setExpanded] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
-  const descriptionRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
   const [participants, setParticipants] = useState<any[]>([]);
@@ -33,17 +33,6 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
       return null;
     }
   };
-
-  // Check if description content overflows
-  useEffect(() => {
-    if (descriptionRef.current && trip.description) {
-      const element = descriptionRef.current;
-      const hasOverflowContent = element.scrollHeight > element.clientHeight;
-      setHasOverflow(hasOverflowContent);
-    } else {
-      setHasOverflow(false);
-    }
-  }, [trip.description]);
 
   useEffect(() => {
     // Fetch participants and expenses for this trip
@@ -80,96 +69,107 @@ const TripCard: React.FC<TripCardProps> = ({ trip, onEditTrip, onDeleteTrip }) =
   const coverImage = trip.cover_image || 'https://images.unsplash.com/photo-1496950866446-3253e1470e8e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80';
 
   return (
-    <div className="bg-card border border-border rounded-lg shadow-sm flex flex-col h-full transition-all duration-200 overflow-hidden relative group hover:shadow-lg hover:-translate-y-1 hover:scale-105">
-      <div
-        className="h-40 w-full bg-cover bg-center cursor-pointer"
-        style={{ backgroundImage: `url(${coverImage})` }}
-        onClick={() => navigate(`/trips/${trip.id}`)}
-        aria-label={`Go to trip: ${trip.title}`}
-        title={trip.title}
-      />
-      <div className="p-4 flex flex-col flex-1 gap-3 pb-14">
-        <div className="flex flex-row items-start gap-4 mb-1">
-          <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-            <h2 className="text-lg font-semibold text-card-foreground truncate">{trip.title}</h2>
-            <div className="flex items-center text-muted-foreground text-sm">
-              <MapPin className="mr-1 h-4 w-4" />
-              <span className="truncate">{trip.destination}</span>
-            </div>
-            <div className="flex items-center text-muted-foreground text-xs mt-1">
-              <Calendar className="mr-1 h-4 w-4" />
-              <span>{startDate && endDate ? `${startDate} - ${endDate}` : startDate || endDate}</span>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-end min-w-[90px] pl-4 border-l border-border ml-2 gap-2">
-            <div className="flex flex-col items-end gap-0.5">
-              <span className="text-[11px] text-muted-foreground font-medium">Participants</span>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground font-semibold">
-                <Users className="h-3 w-3" />
-                <span className="leading-none">{confirmedParticipants.length}</span>
-                <span className="text-xs text-muted-foreground font-semibold leading-none">/ {participants.length}</span>
-              </span>
-            </div>
-            <div className="flex flex-col items-end gap-0.5">
-              <span className="text-[11px] text-muted-foreground font-medium">Expenses</span>
-              <span className="flex items-center gap-1 text-xs text-muted-foreground font-semibold">
-                <DollarSign className="h-3 w-3" />
-                <span className="leading-none">{totalFixedCosts.toLocaleString()}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <Separator className="my-1" />
-        <div
-          ref={descriptionRef}
-          className={`text-muted-foreground text-sm whitespace-pre-line transition-all duration-200 leading-relaxed ${expanded ? '' : 'line-clamp-3'}`}
+    <div className="group relative">
+      <div className="bg-white dark:bg-[#272829] rounded-xl border border-gray-200 dark:border-white/10 transition-all shadow-sm hover:shadow-lg transform hover:scale-[1.02] hover:-translate-y-0.5">
+        {/* Edit/Delete actions */}
+        <ItemCardActions 
+          onEdit={() => onEditTrip(trip)}
+          onDelete={() => onDeleteTrip(trip)}
+          position="bottom-right"
+        />
+        
+        <div 
+          className="flex p-4 space-x-4 cursor-pointer"
+          onClick={() => navigate(`/trips/${trip.id}`)}
         >
-          {trip.description}
+          {/* Trip Image - Thumbnail */}
+          <div className="relative w-24 h-24 flex-shrink-0">
+            {coverImage ? (
+              <img 
+                src={coverImage} 
+                alt={trip.title}
+                className="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-white/10"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/5 rounded-lg">
+                <ImageIcon className="h-6 w-6 text-gray-400 dark:text-white/40" />
+              </div>
+            )}
+          </div>
+          
+          {/* Trip Info */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 pr-2">
+                <h3 className="font-semibold text-lg mb-1 text-gray-900 dark:text-white break-words line-clamp-2">{trip.title}</h3>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <MapPin className="h-3 w-3" />
+                  <span className="truncate">{trip.destination}</span>
+                </div>
+                {startDate && (
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    <Calendar className="h-3 w-3" />
+                    <span>{startDate}{endDate && startDate !== endDate ? ` - ${endDate}` : ''}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Stats */}
+            <div className="mt-3 flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3 text-gray-500 dark:text-gray-500" />
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">{confirmedParticipants.length}</span>
+                <span className="text-xs text-gray-500 dark:text-gray-600">/ {participants.length}</span>
+              </div>
+              {totalFixedCosts > 0 && (
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3 text-gray-500 dark:text-gray-500" />
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">${totalFixedCosts.toLocaleString()}</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        {/* Future: Add expenses/participants here as new sections */}
-      </div>
-      {/* Bottom controls: left = expand/collapse, right = edit/delete (on hover) */}
-      <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10 pointer-events-none">
-        <div className="pointer-events-auto">
-          {hasOverflow && (
-            <button
-              type="button"
-              aria-label={expanded ? 'Collapse details' : 'Expand details'}
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpanded((v) => !v);
-              }}
-              className="p-2 rounded-full text-muted-foreground hover:text-atlas-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-atlas-forest transition-colors bg-transparent"
-            >
-              <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
-            </button>
+        
+        {/* Expandable Content */}
+        <Collapsible open={expanded} onOpenChange={setExpanded}>
+          {trip.description && !expanded && (
+            <CollapsibleTrigger asChild>
+              <button 
+                className="w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-transparent"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-500 transition-transform duration-200 ease-in-out" />
+              </button>
+            </CollapsibleTrigger>
           )}
-        </div>
-        <div className="flex gap-2 pointer-events-auto opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <button
-            className="p-2 rounded-full text-muted-foreground hover:text-atlas-forest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-atlas-forest transition-colors bg-transparent"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditTrip(trip);
-            }}
-            aria-label="Edit trip"
-          >
-            <Pencil className="h-4 w-4" />
-          </button>
-          <button
-            className="p-2 rounded-full text-red-500 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 transition-colors bg-transparent"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteTrip(trip);
-            }}
-            aria-label="Delete trip"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
+          <CollapsibleContent className="overflow-hidden data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
+            <div className="px-4 py-4 bg-transparent">
+              {trip.description && (
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-gray-500 dark:text-gray-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{trip.description}</p>
+                </div>
+              )}
+            </div>
+          </CollapsibleContent>
+          {trip.description && expanded && (
+            <CollapsibleTrigger asChild>
+              <button 
+                className="w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-transparent"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ChevronUp className="h-4 w-4 text-gray-500 dark:text-gray-500 transition-transform duration-200 ease-in-out" />
+              </button>
+            </CollapsibleTrigger>
+          )}
+        </Collapsible>
       </div>
     </div>
   );
-};
+});
+
+TripCard.displayName = 'TripCard';
 
 export default TripCard;
