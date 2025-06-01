@@ -1,14 +1,21 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://atlas-expense-planner.vercel.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Allow all content to be indexed
+Disallow: /api/auth/
+Disallow: /admin/
+
+# Allow common files
+Allow: /favicon.ico
+Allow: /robots.txt
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.svg$
+Allow: /*.png$
+Allow: /*.jpg$

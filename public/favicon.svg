@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle - teal/green ring -->
+  <circle cx="16" cy="16" r="15" fill="#4a6c6f"/>
+  
+  <!-- Middle circle - white background -->
+  <circle cx="16" cy="16" r="12.5" fill="#ffffff"/>
+  
+  <!-- Inner circle - orange/red dot -->
+  <circle cx="16" cy="16" r="5" fill="#e74c3c"/>
+</svg> 

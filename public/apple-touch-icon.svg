@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="180" height="180" rx="40" fill="#ffffff"/>
+  
+  <!-- Logo centered -->
+  <g transform="translate(90, 90)">
+    <!-- Outer circle - teal/green ring -->
+    <circle cx="0" cy="0" r="60" fill="#4a6c6f"/>
+    
+    <!-- Middle circle - white background -->
+    <circle cx="0" cy="0" r="51" fill="#ffffff"/>
+    
+    <!-- Inner circle - orange/red dot -->
+    <circle cx="0" cy="0" r="19" fill="#e74c3c"/>
+  </g>
+</svg> 

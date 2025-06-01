@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { CATEGORY_BADGE_STYLES } from '@/constants/activity';
 import { StarRating } from './StarRating';
 import { ItemCardActions } from '@/components/shared/ItemCardActions';
+import { cn } from '@/lib/utils';
 
 function formatPricePerPerson(activity: any) {
   return activity.price_type === 'per_person'
@@ -112,7 +113,12 @@ const ActivityCard = ({
 
   return (
     <div className="group relative">
-      <div className="bg-white dark:bg-[#242529] rounded-xl border border-gray-200 dark:border-white/10 transition-all shadow-sm hover:shadow-lg transform hover:scale-[1.02] hover:-translate-y-0.5">
+      <div className={cn(
+        "bg-white dark:bg-[#242529] rounded-xl border border-gray-200 dark:border-white/10 transition-all overflow-hidden",
+        expanded 
+          ? "shadow-sm" // Reduced shadow in expanded state
+          : "shadow-sm hover:shadow-lg transform hover:scale-[1.02] hover:-translate-y-0.5"
+      )}>
         {/* Edit/Delete icons */}
         <ItemCardActions onEdit={onEdit} onDelete={onDelete} />
         <div className="flex p-4 space-x-4">
@@ -166,7 +172,7 @@ const ActivityCard = ({
           {!expanded && (
           <CollapsibleTrigger asChild>
             <button 
-                className="w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-transparent"
+                className="w-full px-4 py-1 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-transparent"
             >
                 <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-500 transition-transform duration-200 ease-in-out" />
             </button>
@@ -262,7 +268,7 @@ const ActivityCard = ({
           {expanded && (
             <CollapsibleTrigger asChild>
               <button 
-                className="w-full px-4 py-2 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-transparent"
+                className="w-full px-4 py-1 text-sm text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center transition-colors duration-200 bg-gray-50 dark:bg-[#1f2023]"
               >
                 <ChevronUp className="h-4 w-4 text-gray-500 dark:text-gray-500 transition-transform duration-200 ease-in-out" />
               </button>

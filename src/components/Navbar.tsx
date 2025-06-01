@@ -20,6 +20,7 @@ const Navbar: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   
   useEffect(() => {
@@ -27,6 +28,16 @@ const Navbar: React.FC = () => {
       fetchProfileAvatar();
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
   const fetchProfileAvatar = async () => {
     try {
@@ -64,7 +75,11 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="fixed w-full top-0 z-50">
+    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${
+      scrolled 
+        ? 'bg-background/95 dark:bg-background/95 backdrop-blur-md border-b border-border shadow-sm' 
+        : 'bg-background/80 dark:bg-background/80 backdrop-blur-md border-b border-border/50'
+    }`}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <div className="flex items-center">
           <Logo />
@@ -94,7 +109,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-2 md:space-x-3">
           {/* Theme toggle button */}
           <button
-            className="h-9 w-9 p-0 rounded-full text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-muted flex items-center justify-center"
+            className="h-9 w-9 p-0 rounded-full text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-muted flex items-center justify-center transition-colors duration-200"
             aria-label="Toggle theme"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           >

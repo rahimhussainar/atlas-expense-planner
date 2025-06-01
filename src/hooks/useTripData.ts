@@ -42,10 +42,14 @@ export function useTripData(id: string | undefined) {
       if (activityError) throw activityError;
       setActivities(activityData || []);
 
-      // Fetch expenses
+      // Fetch expenses with detailed information
       const { data: expenseData, error: expenseError } = await supabase
         .from('trip_expenses')
-        .select('*')
+        .select(`
+          *,
+          expense_payers!inner(*),
+          expense_debtors!inner(*)
+        `)
         .eq('trip_id', id);
       if (expenseError) throw expenseError;
       setExpenses(expenseData || []);
@@ -58,36 +62,32 @@ export function useTripData(id: string | undefined) {
       if (voteError) throw voteError;
       setActivityVotes(voteData || []);
 
-      // Fetch voter profiles for all users who have voted
-      const voterUserIds = [...new Set((voteData || []).map(vote => vote.user_id))];
-      if (voterUserIds.length > 0) {
+      // Fetch voter profiles
+      const uniqueUserIds = [...new Set(voteData?.map(v => v.user_id).filter(Boolean) || [])];
+      if (uniqueUserIds.length > 0) {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
-          .select('id, full_name, avatar_url')
-          .in('id', voterUserIds);
+          .select('*')
+          .in('id', uniqueUserIds);
         if (profileError) throw profileError;
         setVoterProfiles(profileData || []);
-      } else {
-        setVoterProfiles([]);
       }
-
-    } catch (err: any) {
-      setError(err.message || 'Failed to load trip data');
+    } catch (error: any) {
+      console.error('Error fetching trip data:', error);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (id) fetchData();
+    if (id) {
+      fetchData();
+    }
   }, [id]);
 
-  // Function to handle voting
   const handleVote = async (activityId: string) => {
-    if (!user) {
-      // Handle not logged in case
-      return;
-    }
+    if (!user) return;
 
     try {
       // Check if user has already voted
@@ -97,57 +97,37 @@ export function useTripData(id: string | undefined) {
 
       if (existingVote) {
         // Remove vote
-        const { error } = await supabase
+        await supabase
           .from('activity_votes')
           .delete()
           .eq('id', existingVote.id);
-        
-        if (error) throw error;
-        
-        // Update local state
-        setActivityVotes(prev => prev.filter(v => v.id !== existingVote.id));
       } else {
         // Add vote
-        const { data, error } = await supabase
+        await supabase
           .from('activity_votes')
           .insert({
             activity_id: activityId,
             user_id: user.id,
             vote: true
-          })
-          .select()
-          .single();
-        
-        if (error) throw error;
-        
-        // Update local state
-        setActivityVotes(prev => [...prev, data]);
-        
-        // Add user profile to voter profiles if not already there
-        const userProfile = voterProfiles.find(p => p.id === user.id);
-        if (!userProfile) {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('id, full_name, avatar_url')
-            .eq('id', user.id)
-            .single();
-          
-          if (profileData) {
-            setVoterProfiles(prev => [...prev, profileData]);
-          }
-        }
+          });
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to update vote');
+
+      // Refresh activity votes
+      const { data: updatedVotes } = await supabase
+        .from('activity_votes')
+        .select('*')
+        .in('activity_id', activities.map(a => a.id));
+      
+      setActivityVotes(updatedVotes || []);
+    } catch (error) {
+      console.error('Error handling vote:', error);
     }
   };
 
-  // Get vote count for an activity
   const getVoteCount = (activityId: string) => {
     return activityVotes.filter(vote => vote.activity_id === activityId).length;
   };
 
-  // Check if user has voted for an activity
   const hasUserVoted = (activityId: string) => {
     if (!user) return false;
     return activityVotes.some(
@@ -155,21 +135,20 @@ export function useTripData(id: string | undefined) {
     );
   };
 
-  // Get voter names for an activity
   const getVoterNames = (activityId: string) => {
-    const activityVoters = activityVotes.filter(vote => vote.activity_id === activityId);
-    return activityVoters.map(vote => {
+    const votes = activityVotes.filter(vote => vote.activity_id === activityId);
+    return votes.map(vote => {
       const profile = voterProfiles.find(p => p.id === vote.user_id);
-      return profile?.full_name || 'Unknown User';
+      return profile?.full_name || profile?.email || 'Anonymous';
     });
   };
 
-  return { 
-    trip, 
-    participants, 
-    activities, 
-    expenses, 
-    loading, 
+  return {
+    trip,
+    participants,
+    activities,
+    expenses,
+    loading,
     error,
     handleVote,
     getVoteCount,

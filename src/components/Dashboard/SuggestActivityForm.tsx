@@ -23,10 +23,11 @@ declare global {
 const CategoryDisplay = ({ value }: { value: string }) => {
   const category = ACTIVITY_CATEGORIES.find(opt => opt.value === value);
   if (!category) return <span>Select category</span>;
+  const IconComponent = category.icon;
   
   return (
     <span className="flex items-center gap-2 truncate">
-      <span className="flex-shrink-0">{category.icon}</span>
+      <IconComponent className="h-4 w-4 flex-shrink-0" />
       <span className="truncate">{category.label}</span>
     </span>
   );
@@ -172,9 +173,10 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative h-full flex flex-col bg-background dark:bg-[#242529] rounded-xl">
-      <div className="flex-1 overflow-y-auto pb-20">
-        <div className="space-y-6 px-4 pt-4 bg-background dark:bg-[#242529]">
+    <form onSubmit={handleSubmit} className="h-full flex flex-col bg-background dark:bg-[#242529] rounded-xl">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="space-y-6 p-4 pb-6">
           {/* Title with Image Upload */}
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0 w-20 h-20 rounded-lg border-2 border-dashed border-border bg-muted dark:bg-[#2e2f33] flex items-center justify-center cursor-pointer transition hover:border-[#4a6c6f] hover:bg-muted/80 relative group overflow-hidden [&&_.trip-upload-text]:hidden">
@@ -197,75 +199,75 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
                 </TripImageUpload>
               )}
             </div>
-            <div className="flex-1 flex flex-col justify-center">
-              <Label htmlFor="title" className="mb-2 text-foreground font-medium">Activity Title <span className="text-red-500">*</span></Label>
-              <Input 
+            
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-[#4a6c6f]" />
+                <Label htmlFor="title" className="text-foreground font-medium">Title <span className="text-red-500">*</span></Label>
+              </div>
+              <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g., Beach Day at Santa Monica"
+                placeholder="What's the activity?"
                 required
                 className="bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-lg px-3 py-2.5 text-base"
               />
             </div>
           </div>
 
-          {/* Cost and Category Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Cost Field */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 mb-2">
-                <Coins className="w-4 h-4 text-[#4a6c6f]" />
-                <Label className="text-foreground font-medium">Cost <span className="text-red-500">*</span></Label>
-              </div>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
-                <Input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder={costType === 'perPerson' ? '0.00' : '0.00'}
-                  value={cost}
-                  onChange={e => setCost(e.target.value)}
-                  required
-                  className="pl-10 pr-20 bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-lg py-2.5 text-base"
-                />
-                <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center bg-background dark:bg-[#242529] rounded-md p-0.5 border border-border">
-                  <button
-                    type="button"
-                    aria-label="Per Person"
-                    className={`p-1.5 rounded text-xs font-medium transition-all ${
-                      costType === 'perPerson' 
-                        ? 'bg-[#4a6c6f] text-white' 
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                    onClick={() => setCostType('perPerson')}
-                  >
-                    <User className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Total"
-                    className={`p-1.5 rounded text-xs font-medium transition-all ${
-                      costType === 'total' 
-                        ? 'bg-[#4a6c6f] text-white' 
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                    onClick={() => setCostType('total')}
-                  >
-                    <DollarSign className="h-4 w-4" />
-                  </button>
+          {/* Cost Type and Amount */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Coins className="w-4 h-4 text-[#4a6c6f]" />
+              <Label className="text-foreground font-medium">Cost</Label>
+            </div>
+            
+            <ToggleGroup type="single" value={costType} onValueChange={(value: CostType) => value && setCostType(value)} className="justify-start">
+              <ToggleGroupItem 
+                value="perPerson" 
+                aria-label="Per Person"
+                className="data-[state=on]:bg-[#4a6c6f] data-[state=on]:text-white hover:bg-[#4a6c6f]/10 border border-border"
+              >
+                <User className="w-4 h-4 mr-2" />
+                Per Person
+              </ToggleGroupItem>
+              <ToggleGroupItem 
+                value="total" 
+                aria-label="Total Cost"
+                className="data-[state=on]:bg-[#4a6c6f] data-[state=on]:text-white hover:bg-[#4a6c6f]/10 border border-border"
+              >
+                <DollarSign className="w-4 h-4 mr-2" />
+                Total Cost
+              </ToggleGroupItem>
+            </ToggleGroup>
+            
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none z-10" />
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                className="pl-10 bg-muted dark:bg-[#2e2f33] border-border text-foreground placeholder-muted-foreground focus:border-[#4a6c6f] focus:ring-1 focus:ring-[#4a6c6f] rounded-lg py-2.5 text-base"
+              />
+            </div>
+            
+            {cost && Number(cost) > 0 && (
+              <div className="text-sm text-muted-foreground bg-muted dark:bg-[#2e2f33] p-3 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span>{costType === 'perPerson' ? 'Total for group:' : 'Per person:'}</span>
+                  <span className="font-semibold text-foreground">
+                    ${costType === 'perPerson' ? totalCost.toFixed(2) : perPersonCost.toFixed(2)}
+                  </span>
+                </div>
+                <div className="text-xs mt-1">
+                  Based on {confirmedCount} confirmed participant{confirmedCount !== 1 ? 's' : ''}
                 </div>
               </div>
-              {cost && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {costType === 'perPerson' 
-                    ? `$${cost} × ${confirmedCount} ${confirmedCount === 1 ? 'person' : 'people'} = $${(Number(cost) * confirmedCount).toFixed(2)} total`
-                    : `$${(Number(cost) / confirmedCount).toFixed(2)} per person (${confirmedCount} ${confirmedCount === 1 ? 'person' : 'people'})`
-                  }
-                </p>
-              )}
-            </div>
+            )}
             
             {/* Category Field */}
             <div className="space-y-2">
@@ -279,15 +281,18 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
                     <CategoryDisplay value={category} />
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="bg-card dark:bg-[#2e2f33] border-border rounded-lg">
-                  {ACTIVITY_CATEGORIES.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value} className="text-foreground hover:bg-[#4a6c6f] hover:text-white focus:bg-[#4a6c6f] focus:text-white">
-                      <span className="flex items-center gap-2">
-                        <span className="flex-shrink-0">{opt.icon}</span>
-                        <span>{opt.label}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
+                <SelectContent className="bg-card dark:bg-[#2e2f33] border-border rounded-lg z-[200]">
+                  {ACTIVITY_CATEGORIES.map(opt => {
+                    const IconComponent = opt.icon;
+                    return (
+                      <SelectItem key={opt.value} value={opt.value} className="text-foreground hover:bg-[#4a6c6f] hover:text-white focus:bg-[#4a6c6f] focus:text-white">
+                        <span className="flex items-center gap-2">
+                          <IconComponent className="h-4 w-4 flex-shrink-0" />
+                          <span>{opt.label}</span>
+                        </span>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -439,19 +444,19 @@ const SuggestActivityForm: React.FC<SuggestActivityFormProps> = ({ onSubmit, isL
               </div>
             )}
             
-            <p className="text-xs text-muted-foreground">
-              💡 Tip: You can search for businesses or enter any address manually
+            <p className="text-xs text-muted-foreground bg-muted/50 dark:bg-[#2e2f33]/50 p-3 rounded-lg border border-border/50">
+              💡 <strong>Tip:</strong> You can search for businesses or enter any address manually
             </p>
           </div>
         </div>
       </div>
       
-      {/* Fixed Footer - Absolutely positioned at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 bg-background dark:bg-[#242529] z-20 border-t border-border px-4 py-4">
-        <div className="flex justify-end space-x-3">
+      {/* Fixed Footer */}
+      <div className="flex-shrink-0 bg-background dark:bg-[#242529] border-t border-border px-4 py-3 sm:py-4">
+        <div className="flex justify-end">
           <Button 
             type="submit"
-            className="bg-[#4a6c6f] hover:bg-[#395457] text-white font-semibold rounded-lg px-6 py-2.5 transition shadow-sm hover:shadow-md"
+            className="bg-[#4a6c6f] hover:bg-[#395457] text-white font-semibold rounded-lg px-6 py-2.5 transition shadow-sm hover:shadow-md w-full sm:w-auto"
             disabled={isLoading || submitting}
           >
             {isLoading || submitting ? 'Submitting...' : submitButtonText}

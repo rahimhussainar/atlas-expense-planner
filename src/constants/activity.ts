@@ -1,11 +1,20 @@
+import { 
+  PartyPopper, 
+  Utensils, 
+  Building2, 
+  TreePine, 
+  ShoppingBag, 
+  MapPin 
+} from 'lucide-react';
+
 // Activity Categories
 export const ACTIVITY_CATEGORIES = [
-  { value: 'fun', label: 'Fun', icon: '🎉' },
-  { value: 'food', label: 'Food', icon: '🍽️' },
-  { value: 'culture', label: 'Culture', icon: '🏛️' },
-  { value: 'nature', label: 'Nature', icon: '🌿' },
-  { value: 'shopping', label: 'Shopping', icon: '🛍️' },
-  { value: 'other', label: 'Other', icon: '📌' },
+  { value: 'fun', label: 'Fun', icon: PartyPopper },
+  { value: 'food', label: 'Food', icon: Utensils },
+  { value: 'culture', label: 'Culture', icon: Building2 },
+  { value: 'nature', label: 'Nature', icon: TreePine },
+  { value: 'shopping', label: 'Shopping', icon: ShoppingBag },
+  { value: 'other', label: 'Other', icon: MapPin },
 ] as const;
 
 // Category Badge Styles

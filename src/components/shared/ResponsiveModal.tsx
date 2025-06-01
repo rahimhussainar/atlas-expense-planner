@@ -50,7 +50,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         maxWidth,
-        "bg-background dark:bg-[#242529] border border-border max-h-[90vh] flex flex-col overflow-hidden z-[102]",
+        "bg-background dark:bg-[#242529] border border-border max-h-[90vh] flex flex-col z-[102]",
         className
       )}>
         <DialogHeader className="flex-shrink-0 px-4 pt-4">
@@ -61,7 +61,7 @@ export const ResponsiveModal: React.FC<ResponsiveModalProps> = ({
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="flex-1 overflow-hidden bg-background dark:bg-[#242529] rounded-xl">
+        <div className="flex-1 bg-background dark:bg-[#242529] rounded-xl">
           {children}
         </div>
       </DialogContent>

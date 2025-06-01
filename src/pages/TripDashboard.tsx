@@ -69,6 +69,7 @@ import {
 import ActivityCard from '@/components/Dashboard/ActivityCard';
 import ParticipantCard from '@/components/Dashboard/ParticipantCard';
 import ExpenseCard from '@/components/Dashboard/ExpenseCard';
+import ExpenseDialog from '@/components/Dashboard/ExpenseDialog';
 import ManageParticipantsModal from '@/components/Dashboard/ManageParticipantsModal';
 import ImageUploadModal from '@/components/Dashboard/ImageUploadModal';
 import StatCardsSection from '@/components/Dashboard/StatCardsSection';
@@ -83,6 +84,45 @@ import { EmptyStateCard } from '@/components/shared/EmptyStateCard';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
 import { TripActivity } from '@/types/activity';
 
+// Add expense type
+interface TripExpense {
+  id: string;
+  description: string;
+  totalAmount: number;
+  date: string;
+  category: string;
+  payers: {
+    participantId: string;
+    name: string;
+    amount: number;
+  }[];
+  debtors: {
+    participantId: string;
+    name: string;
+    amount: number;
+  }[];
+}
+
+// Add expense type interface at the top with existing interfaces
+interface TripExpenseWithDetails {
+  id: string;
+  title: string;
+  description: string | null;
+  totalAmount: number;
+  date: string;
+  category: string;
+  payers: {
+    participantId: string;
+    name: string;
+    amount: number;
+  }[];
+  debtors: {
+    participantId: string;
+    name: string;
+    amount: number;
+  }[];
+  created_by_name?: string;
+}
 
 // Helpers/constants outside the main component
 const categoryBadgeStyles = {
@@ -132,6 +172,8 @@ const TripDashboard: React.FC = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [expandedActivities, setExpandedActivities] = useState<number[]>([]);
+  const [expandedExpenses, setExpandedExpenses] = useState<string[]>([]);
+  const [detailedExpenses, setDetailedExpenses] = useState<TripExpenseWithDetails[]>([]);
   const { countdownProgress, countdownInfo } = useCountdown(trip);
   const confirmedParticipants = useMemo(
     () => participants.filter(p => {
@@ -166,16 +208,68 @@ const TripDashboard: React.FC = () => {
 
   // Mock data for development
   const mockParticipants = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', status: 'confirmed', owes: 150, owed: 75 },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'maybe', owes: 0, owed: 150 },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'declined', owes: 50, owed: 0 },
+    { id: '1', name: 'John Doe', email: 'john@example.com', status: 'confirmed', owes: 150, owed: 75 },
+    { id: '2', name: 'Jane Smith', email: 'jane@example.com', status: 'maybe', owes: 0, owed: 150 },
+    { id: '3', name: 'Bob Johnson', email: 'bob@example.com', status: 'declined', owes: 50, owed: 0 },
   ];
 
-  const mockExpenses = [
-    { id: 1, description: 'Hotel Booking', amount: 300, purchaser: 'John Doe', date: '2024-03-15', category: 'accommodation' },
-    { id: 2, description: 'Dinner', amount: 150, purchaser: 'Jane Smith', date: '2024-03-16', category: 'food' },
-    { id: 3, description: 'Museum Tickets', amount: 80, purchaser: 'Bob Johnson', date: '2024-03-17', category: 'activities' },
-  ];
+  // Fetch detailed expense data from Supabase
+  useEffect(() => {
+    const fetchDetailedExpenses = async () => {
+      if (!id) return;
+      
+      try {
+        // Fetch expenses with their payers and debtors
+        const { data: expensesData, error: expensesError } = await supabase
+          .from('trip_expenses')
+          .select('*')
+          .eq('trip_id', id);
+
+        if (expensesError) throw expensesError;
+
+        // For each expense, fetch payers and debtors
+        const detailedExpensesPromises = expensesData.map(async (expense) => {
+          const [payersResult, debtorsResult] = await Promise.all([
+            supabase
+              .from('expense_payers')
+              .select('*')
+              .eq('expense_id', expense.id),
+            supabase
+              .from('expense_debtors')
+              .select('*')
+              .eq('expense_id', expense.id)
+          ]);
+
+          return {
+            id: expense.id,
+            title: expense.title,
+            description: expense.description,
+            totalAmount: expense.total_amount,
+            date: expense.expense_date,
+            category: expense.category || 'other',
+            created_by_name: expense.created_by_name,
+            payers: payersResult.data?.map(p => ({
+              participantId: p.participant_id,
+              name: p.participant_name,
+              amount: p.amount
+            })) || [],
+            debtors: debtorsResult.data?.map(d => ({
+              participantId: d.participant_id,
+              name: d.participant_name,
+              amount: d.amount
+            })) || []
+          };
+        });
+
+        const detailedExpensesData = await Promise.all(detailedExpensesPromises);
+        setDetailedExpenses(detailedExpensesData);
+      } catch (error) {
+        console.error('Error fetching detailed expenses:', error);
+      }
+    };
+
+    fetchDetailedExpenses();
+  }, [id, expenses]); // Re-fetch when expenses change
 
   // Add this function to handle adding participants
   const handleAddParticipant = () => {
@@ -213,6 +307,9 @@ const TripDashboard: React.FC = () => {
   
   // Use the CRUD operations hook for activities
   const activityCrud = useCrudOperations<TripActivity>({ onRefresh: refetch });
+
+  // Use the CRUD operations hook for expenses
+  const expenseCrud = useCrudOperations<TripExpense>({ onRefresh: refetch });
 
   // Handler to submit a new or edited activity
   const handleSuggestActivity = async (activity: any) => {
@@ -301,6 +398,136 @@ const TripDashboard: React.FC = () => {
       if (error) throw error;
   };
 
+  // Handler to submit a new or edited expense
+  const handleSubmitExpense = async (formData: any) => {
+    if (!id) return;
+
+    try {
+      // Get the current user
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+      const userName = userData?.user?.user_metadata?.full_name || userData?.user?.email || 'Unknown';
+
+      if (expenseCrud.formMode === 'edit' && expenseCrud.itemToEdit) {
+        // Update existing expense
+        const { error: expenseError } = await supabase
+          .from('trip_expenses')
+          .update({
+            title: formData.description,
+            description: formData.description,
+            total_amount: formData.totalAmount,
+            expense_date: formData.date,
+            category: formData.category,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', expenseCrud.itemToEdit.id);
+
+        if (expenseError) throw expenseError;
+
+        // Delete existing payers and debtors
+        await Promise.all([
+          supabase.from('expense_payers').delete().eq('expense_id', expenseCrud.itemToEdit.id),
+          supabase.from('expense_debtors').delete().eq('expense_id', expenseCrud.itemToEdit.id)
+        ]);
+
+        // Insert new payers and debtors
+        await Promise.all([
+          supabase.from('expense_payers').insert(
+            formData.payers.map((payer: any) => ({
+              expense_id: expenseCrud.itemToEdit.id,
+              participant_id: payer.participantId,
+              participant_name: mockParticipants.find(p => p.id === payer.participantId)?.name || 'Unknown',
+              amount: payer.amount
+            }))
+          ),
+          supabase.from('expense_debtors').insert(
+            formData.debtors.map((debtor: any) => ({
+              expense_id: expenseCrud.itemToEdit.id,
+              participant_id: debtor.participantId,
+              participant_name: mockParticipants.find(p => p.id === debtor.participantId)?.name || 'Unknown',
+              amount: debtor.amount
+            }))
+          )
+        ]);
+      } else {
+        // Create new expense
+        const { data: newExpense, error: expenseError } = await supabase
+          .from('trip_expenses')
+          .insert({
+            trip_id: id,
+            title: formData.description,
+            description: formData.description,
+            total_amount: formData.totalAmount,
+            expense_date: formData.date,
+            category: formData.category,
+            created_by: userId || '',
+            created_by_name: userName
+          })
+          .select()
+          .single();
+
+        if (expenseError) throw expenseError;
+
+        // Insert payers and debtors
+        await Promise.all([
+          supabase.from('expense_payers').insert(
+            formData.payers.map((payer: any) => ({
+              expense_id: newExpense.id,
+              participant_id: payer.participantId,
+              participant_name: mockParticipants.find(p => p.id === payer.participantId)?.name || 'Unknown',
+              amount: payer.amount
+            }))
+          ),
+          supabase.from('expense_debtors').insert(
+            formData.debtors.map((debtor: any) => ({
+              expense_id: newExpense.id,
+              participant_id: debtor.participantId,
+              participant_name: mockParticipants.find(p => p.id === debtor.participantId)?.name || 'Unknown',
+              amount: debtor.amount
+            }))
+          )
+        ]);
+      }
+
+      toast({
+        title: expenseCrud.formMode === 'edit' ? 'Expense updated' : 'Expense added',
+        description: `${formData.description} has been ${expenseCrud.formMode === 'edit' ? 'updated' : 'added'} successfully.`,
+      });
+      
+      expenseCrud.closeForm();
+      refetch(); // This will trigger the useEffect to refetch detailed expenses
+    } catch (error: any) {
+      console.error('Error saving expense:', error);
+      toast({
+        title: 'Error',
+        description: error.message || 'Failed to save expense. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Handler to delete an expense
+  const handleDeleteExpense = async (expense: TripExpenseWithDetails) => {
+    try {
+      // Delete payers and debtors first (due to foreign key constraints)
+      await Promise.all([
+        supabase.from('expense_payers').delete().eq('expense_id', expense.id),
+        supabase.from('expense_debtors').delete().eq('expense_id', expense.id)
+      ]);
+
+      // Delete the expense
+      const { error } = await supabase
+        .from('trip_expenses')
+        .delete()
+        .eq('id', expense.id);
+      
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Error deleting expense:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground relative">
       {/* Background Effects */}
@@ -372,8 +599,8 @@ const TripDashboard: React.FC = () => {
                 </div>
               </Card>
 
-              {/* Expenses Section - Card Stack Style */}
-              <Card className="relative overflow-hidden border-border shadow-lg bg-card/80 dark:bg-[#252627] backdrop-blur-sm p-6">
+              {/* Expenses Section - Updated to match Activities styling */}
+              <Card className="relative overflow-hidden border-border shadow-lg bg-card/80 dark:bg-[#242529] backdrop-blur-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-semibold flex items-center">
                     <Receipt className="mr-2 h-5 w-5 text-emerald-500" />
@@ -382,16 +609,53 @@ const TripDashboard: React.FC = () => {
                   <Button 
                     variant="ghost" 
                     size="sm"
+                    onClick={expenseCrud.openAddForm}
+                    className="hover:bg-[#4a6c6f] hover:text-white transition-all"
                   >
                     <Plus className="h-4 w-4 mr-1" />
                     Add Expense
                   </Button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {mockExpenses.map((expense, index) => (
-                    <ExpenseCard key={expense.id} expense={expense} index={index} />
-                  ))}
-                </div>
+                {detailedExpenses.length === 0 ? (
+                  <EmptyStateCard
+                    icon={<Receipt className="w-12 h-12 text-emerald-500" />}
+                    title="No expenses yet"
+                    description="Start tracking your trip expenses"
+                    actionLabel="Add Expense"
+                    onAction={expenseCrud.openAddForm}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {detailedExpenses.map((expense) => (
+                      <ExpenseCard 
+                        key={expense.id} 
+                        expense={{
+                          id: expense.id,
+                          description: expense.title,
+                          totalAmount: expense.totalAmount,
+                          date: expense.date,
+                          category: expense.category,
+                          payers: expense.payers,
+                          debtors: expense.debtors
+                        }}
+                        expanded={expandedExpenses.includes(expense.id)}
+                        onExpand={(open) => {
+                          setExpandedExpenses(prev => 
+                            open 
+                              ? [...prev, expense.id]
+                              : prev.filter(id => id !== expense.id)
+                          );
+                        }}
+                        onEdit={() => expenseCrud.openEditForm({
+                          ...expense,
+                          description: expense.title,
+                          totalAmount: expense.totalAmount
+                        })}
+                        onDelete={() => expenseCrud.handleDelete(expense)}
+                      />
+                    ))}
+                  </div>
+                )}
               </Card>
 
               {/* Activities Section - Proposal Board Style */}
@@ -493,11 +757,31 @@ const TripDashboard: React.FC = () => {
               description="Are you sure you want to delete this activity? This action cannot be undone."
               isDeleting={activityCrud.isDeleting}
             />
+
+            <ExpenseDialog
+              isOpen={expenseCrud.isFormOpen}
+              onOpenChange={expenseCrud.setIsFormOpen}
+              onSubmit={handleSubmitExpense}
+              participants={mockParticipants}
+              loading={false}
+              initialValues={expenseCrud.itemToEdit}
+              mode={expenseCrud.formMode}
+            />
+
+            <DeleteConfirmationDialog
+              isOpen={!!expenseCrud.itemToDelete}
+              onOpenChange={(open) => !open && expenseCrud.cancelDelete()}
+              onConfirm={() => expenseCrud.confirmDelete(handleDeleteExpense, 'Expense deleted successfully')}
+              onCancel={expenseCrud.cancelDelete}
+              title="Delete Expense"
+              description="Are you sure you want to delete this expense? This action cannot be undone."
+              isDeleting={expenseCrud.isDeleting}
+            />
           </>
-      )}
+        )}
       </main>
     </div>
-);
+  );
 };
 
 export default TripDashboard;

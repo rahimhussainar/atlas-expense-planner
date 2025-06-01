@@ -11,25 +11,25 @@ export type Database = {
     Tables: {
       activity_votes: {
         Row: {
-          activity_id: string
+          activity_id: string | null
           created_at: string | null
           id: string
-          user_id: string
-          vote: boolean
+          user_id: string | null
+          vote: boolean | null
         }
         Insert: {
-          activity_id: string
+          activity_id?: string | null
           created_at?: string | null
           id?: string
-          user_id: string
-          vote: boolean
+          user_id?: string | null
+          vote?: boolean | null
         }
         Update: {
-          activity_id?: string
+          activity_id?: string | null
           created_at?: string | null
           id?: string
-          user_id?: string
-          vote?: boolean
+          user_id?: string | null
+          vote?: boolean | null
         }
         Relationships: [
           {
@@ -41,21 +41,94 @@ export type Database = {
           },
         ]
       }
+      expense_debtors: {
+        Row: {
+          amount: number
+          created_at: string | null
+          expense_id: string
+          id: string
+          participant_id: string
+          participant_name: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          expense_id: string
+          id?: string
+          participant_id: string
+          participant_name: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          expense_id?: string
+          id?: string
+          participant_id?: string
+          participant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_debtors_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "trip_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expense_payers: {
+        Row: {
+          amount: number
+          created_at: string | null
+          expense_id: string
+          id: string
+          participant_id: string
+          participant_name: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          expense_id: string
+          id?: string
+          participant_id: string
+          participant_name: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          expense_id?: string
+          id?: string
+          participant_id?: string
+          participant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_payers_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "trip_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          email: string | null
           full_name: string | null
           id: string
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          email?: string | null
           full_name?: string | null
           id: string
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          email?: string | null
           full_name?: string | null
           id?: string
           updated_at?: string | null
@@ -64,42 +137,79 @@ export type Database = {
       }
       trip_activities: {
         Row: {
+          business_address: string | null
+          business_name: string | null
+          business_rating: number | null
+          business_total_ratings: number | null
+          business_website: string | null
+          category: string | null
           created_at: string | null
-          created_by: string
-          date: string | null
+          created_by: string | null
+          created_by_name: string | null
           description: string | null
           id: string
+          image: string | null
           location: string | null
-          status: string
+          price: number | null
+          price_type: string | null
+          status: string | null
           title: string
-          trip_id: string
+          total_price: number | null
+          trip_id: string | null
           updated_at: string | null
         }
         Insert: {
+          business_address?: string | null
+          business_name?: string | null
+          business_rating?: number | null
+          business_total_ratings?: number | null
+          business_website?: string | null
+          category?: string | null
           created_at?: string | null
-          created_by: string
-          date?: string | null
+          created_by?: string | null
+          created_by_name?: string | null
           description?: string | null
           id?: string
+          image?: string | null
           location?: string | null
-          status?: string
+          price?: number | null
+          price_type?: string | null
+          status?: string | null
           title: string
-          trip_id: string
+          total_price?: number | null
+          trip_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          business_address?: string | null
+          business_name?: string | null
+          business_rating?: number | null
+          business_total_ratings?: number | null
+          business_website?: string | null
+          category?: string | null
           created_at?: string | null
-          created_by?: string
-          date?: string | null
+          created_by?: string | null
+          created_by_name?: string | null
           description?: string | null
           id?: string
+          image?: string | null
           location?: string | null
-          status?: string
+          price?: number | null
+          price_type?: string | null
+          status?: string | null
           title?: string
-          trip_id?: string
+          total_price?: number | null
+          trip_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "trip_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "trip_activities_trip_id_fkey"
             columns: ["trip_id"]
@@ -111,44 +221,47 @@ export type Database = {
       }
       trip_expenses: {
         Row: {
-          amount: number
-          category: string
+          category: string | null
           created_at: string | null
           created_by: string
-          currency: string
+          created_by_name: string | null
+          currency: string | null
           description: string | null
-          expense_date: string | null
+          expense_date: string
           id: string
-          paid_by: string | null
+          receipt_url: string | null
           title: string
+          total_amount: number
           trip_id: string
           updated_at: string | null
         }
         Insert: {
-          amount: number
-          category: string
+          category?: string | null
           created_at?: string | null
           created_by: string
-          currency?: string
+          created_by_name?: string | null
+          currency?: string | null
           description?: string | null
-          expense_date?: string | null
+          expense_date: string
           id?: string
-          paid_by?: string | null
+          receipt_url?: string | null
           title: string
+          total_amount: number
           trip_id: string
           updated_at?: string | null
         }
         Update: {
-          amount?: number
-          category?: string
+          category?: string | null
           created_at?: string | null
           created_by?: string
-          currency?: string
+          created_by_name?: string | null
+          currency?: string | null
           description?: string | null
-          expense_date?: string | null
+          expense_date?: string
           id?: string
-          paid_by?: string | null
+          receipt_url?: string | null
           title?: string
+          total_amount?: number
           trip_id?: string
           updated_at?: string | null
         }
@@ -164,24 +277,30 @@ export type Database = {
       }
       trip_participants: {
         Row: {
+          created_at: string | null
           email: string | null
           id: string
           rsvp_status: string | null
-          trip_id: string
+          trip_id: string | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          created_at?: string | null
           email?: string | null
           id?: string
           rsvp_status?: string | null
-          trip_id: string
+          trip_id?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          created_at?: string | null
           email?: string | null
           id?: string
           rsvp_status?: string | null
-          trip_id?: string
+          trip_id?: string | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -190,6 +309,13 @@ export type Database = {
             columns: ["trip_id"]
             isOneToOne: false
             referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trip_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -238,12 +364,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_expense_details: {
+        Args: { expense_uuid: string }
+        Returns: Json
+      }
       is_trip_creator: {
         Args: { trip_id: string }
         Returns: boolean
       }
       is_trip_participant: {
-        Args: { trip_id: string }
+        Args: { p_trip_id: string }
         Returns: boolean
       }
     }

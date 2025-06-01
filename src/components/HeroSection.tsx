@@ -7,7 +7,7 @@ const HeroSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative w-full min-h-screen flex items-center justify-center">
+    <section className="relative w-full min-h-screen flex items-center justify-center pt-16">
       {/* Professional animated background with green accents */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-full h-full">

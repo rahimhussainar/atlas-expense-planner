@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#e2e8f0"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative background circles -->
+  <circle cx="100" cy="100" r="60" fill="#4a6c6f" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="80" fill="#4a6c6f" opacity="0.08"/>
+  <circle cx="1000" cy="150" r="40" fill="#e74c3c" opacity="0.1"/>
+  
+  <!-- Main content container -->
+  <g transform="translate(100, 100)">
+    <!-- Logo -->
+    <g transform="translate(50, 180)">
+      <!-- Outer circle - teal/green ring -->
+      <circle cx="60" cy="60" r="55" fill="#4a6c6f" filter="url(#shadow)"/>
+      
+      <!-- Middle circle - white background -->
+      <circle cx="60" cy="60" r="47" fill="#ffffff"/>
+      
+      <!-- Inner circle - orange/red dot -->
+      <circle cx="60" cy="60" r="18" fill="#e74c3c"/>
+    </g>
+    
+    <!-- Text content -->
+    <g transform="translate(180, 150)">
+      <!-- Main title -->
+      <text x="0" y="40" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="56" font-weight="700" fill="#1f2937">Trip Atlas</text>
+      
+      <!-- Subtitle -->
+      <text x="0" y="90" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="28" font-weight="500" fill="#4a6c6f">Track Group Trips &amp; Expenses</text>
+      
+      <!-- Description -->
+      <text x="0" y="140" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="400" fill="#6b7280">Plan your next journey, track expenses, and create</text>
+      <text x="0" y="170" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="20" font-weight="400" fill="#6b7280">unforgettable memories with your travel companions.</text>
+    </g>
+  </g>
+  
+  <!-- Website URL -->
+  <text x="100" y="580" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="500" fill="#9ca3af">atlas-expense-planner.vercel.app</text>
+</svg> 
